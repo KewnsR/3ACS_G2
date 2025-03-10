@@ -1,0 +1,76 @@
+﻿@page
+@model DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>HRIS</h2>
+        <nav>
+            <a href="#" class="menu-item active"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#" class="menu-item"><i class="fas fa-users"></i> Employees</a>
+            <a href="#" class="menu-item"><i class="fas fa-building"></i> Departments</a>
+            <a href="#" class="menu-item"><i class="fas fa-clock"></i> Attendance</a>
+            <a href="#" class="menu-item"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="#" class="menu-item"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <header class="header">
+            <input type="text" class="search-box" placeholder="Search...">
+            <div class="user-icon">
+                <span class="notification-dot"></span>
+                <img src="~/images/user-icon.png" alt="User">
+            </div>
+        </header>
+
+        <h1>Dashboard</h1>
+        <p>Overview of your HR system</p>
+
+        <div class="dashboard-cards">
+            <div class="card">
+                <h3>Total Employees</h3>
+                <p>142</p>
+            </div>
+            <div class="card">
+                <h3>Departments</h3>
+                <p>8</p>
+            </div>
+            <div class="card">
+                <h3>Attendance Rate</h3>
+                <p>94%</p>
+            </div>
+            <div class="card">
+                <h3>Productivity</h3>
+                <p>87%</p>
+            </div>
+        </div>
+
+        <div class="activities">
+            <div class="activity-box">
+                <h3>Recent Activities</h3>
+                <div class="activity-item">
+                    <img src="~/images/user1.png" alt="">
+                    <p><strong>John Doe</strong> Updated profile</p>
+                </div>
+                <div class="activity-item">
+                    <img src="~/images/user2.png" alt="">
+                    <p><strong>Jane Smith</strong> Requested leave</p>
+                </div>
+            </div>
+
+            <div class="activity-box">
+                <h3>Department Distribution</h3>
+                <p>Engineering: 42</p>
+                <p>Marketing: 28</p>
+                <p>Sales: 35</p>
+                <p>HR: 15</p>
+                <p>Finance: 22</p>
+            </div>
+        </div>
+    </main>
+</div>

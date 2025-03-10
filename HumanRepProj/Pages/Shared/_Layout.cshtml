@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - HRIS</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/Dashboard.css" asp-append-version="true">
+
+    <!-- FontAwesome for Icons -->
+    <script src="https://kit.fontawesome.com/your-fontawesome-key.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>HRIS</h2>
+        <nav>
+            <a href="/Dashboard" class="menu-item active"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="/Employees" class="menu-item"><i class="fas fa-users"></i> Employees</a>
+            <a href="/Departments" class="menu-item"><i class="fas fa-building"></i> Departments</a>
+            <a href="/Attendance" class="menu-item"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="/LeaveRequests" class="menu-item"><i class="fas fa-file-alt"></i> Leave Requests</a>
+            <a href="/Reports" class="menu-item"><i class="fas fa-chart-line"></i> Reports</a>
+            <a href="/Documents" class="menu-item"><i class="fas fa-folder"></i> Documents</a>
+            <a href="/Settings" class="menu-item"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Header -->
+        <div class="header">
+            <input type="text" class="search-box" placeholder="Search...">
+
+            <div class="user-info">
+                <!-- Notifications -->
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-dot"></span>
+                </div>
+
+                <!-- User Profile -->
+                <div class="user-profile">
+                    <img src="~/images/user-icon.png" alt="User" class="user-avatar">
+                    <div class="user-dropdown">
+                        <p class="user-name">@Context.Session.GetString("UserName")</p>
+                        <p class="user-email">@Context.Session.GetString("UserEmail")</p>
+                        <a href="/Logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+</body>
+</html>

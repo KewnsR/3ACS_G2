@@ -1,0 +1,58 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRIS - Register</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+</head>
+<body class="login-body">
+    <div class="container">
+        <h2><strong>HRIS</strong></h2>
+        <p>Human Resource Information System</p>
+
+        <div class="tabs">
+            <button class="tab"><a href="/Login">Login</a></button>
+            <button class="tab active">Sign Up</button>
+        </div>
+
+        <form method="post">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" asp-for="Input.FullName" required placeholder="John Doe" />
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" asp-for="Input.Email" required placeholder="name@example.com" />
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" asp-for="Input.Password" required />
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" asp-for="Input.ConfirmPassword" required />
+            </div>
+
+            <button type="submit" class="btn">Create Account</button>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <p style="color: red;">@Model.ErrorMessage</p>
+            }
+        </form>
+
+        <p class="terms">By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+    </div>
+</body>
+</html>
