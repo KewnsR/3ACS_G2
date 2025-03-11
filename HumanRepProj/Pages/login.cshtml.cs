@@ -1,78 +1,58 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
+using HumanRepProj.Data; // Ensure this namespace is correct
+using HumanRepProj.Models; // Ensure this namespace is correct
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
-namespace HumanRepProj.Pages
+namespace HumanRepProj.Pages // Ensure this namespace is correct
 {
     public class LoginModel : PageModel
     {
+        private readonly ApplicationDbContext _context;
+
+        public LoginModel(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         [BindProperty]
-        public LoginInputModel Input { get; set; }
+        public string Username { get; set; }
 
-        public string ErrorMessage { get; set; }
-
-        public class LoginInputModel
-        {
-            [Required, EmailAddress]
-            public string Email { get; set; }
-
-            [Required, MinLength(6)]
-            public string Password { get; set; }
-        }
-        public class RegisterModel : PageModel
-        {
-            [BindProperty]
-            public RegisterInputModel Input { get; set; }
-
-            public string ErrorMessage { get; set; }
-
-            public void OnGet()
-            {
-            }
-
-            public void OnPost()
-            {
-                if (!ModelState.IsValid)
-                {
-                    ErrorMessage = "Please correct the errors and try again.";
-                    return;
-                }
-
-                // Add your registration logic here
-            }
-
-            public class RegisterInputModel
-            {
-                public string FullName { get; set; }
-                public string Email { get; set; }
-                public string Password { get; set; }
-                public string ConfirmPassword { get; set; }
-            }
-        }
-
-        public void OnGet()
-        {
-            ErrorMessage = string.Empty;
-        }
+        [BindProperty]
+        public string Password { get; set; }
 
         public IActionResult OnPost()
         {
-            if (!ModelState.IsValid)
+            var user = _context.Logins.SingleOrDefault(u => u.Username == Username);
+            if (user != null && VerifyPasswordHash(Password, user.PasswordHash))
             {
-                return Page();
+                // Set session or cookie here
+                HttpContext.Session.SetString("Username", Username);
+                return RedirectToPage("/Index");S
             }
 
-            if (Input.Email == "admin@example.com" && Input.Password == "password")
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return Page();
+        }
+
+        private bool VerifyPasswordHash(string password, string storedHash)
+        {
+            using (var sha256 = SHA256.Create())
             {
-                // Store session for authentication
-                HttpContext.Session.SetString("UserEmail", Input.Email);
-                return RedirectToPage("/Dashboard");
+                var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                return hashString == storedHash;
             }
-            else
+        }
+
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
             {
-                ErrorMessage = "Invalid email or password.";
-                return Page();
+                var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
             }
         }
     }
