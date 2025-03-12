@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using HumanRepProj.Data; // Ensure this namespace is correct
-using HumanRepProj.Models; // Ensure this namespace is correct
+using System.ComponentModel.DataAnnotations;
+using HumanRepProj.Data;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
-namespace HumanRepProj.Pages // Ensure this namespace is correct
+namespace HumanRepProj.Pages
 {
     public class LoginModel : PageModel
     {
@@ -18,42 +16,48 @@ namespace HumanRepProj.Pages // Ensure this namespace is correct
         }
 
         [BindProperty]
-        public string Username { get; set; }
+        public InputModel Input { get; set; }
 
-        [BindProperty]
-        public string Password { get; set; }
+        public string ErrorMessage { get; set; }
+
+        public void OnGet()
+        {
+            // Initialize any necessary data here
+        }
 
         public IActionResult OnPost()
         {
-            var user = _context.Logins.SingleOrDefault(u => u.Username == Username);
-            if (user != null && VerifyPasswordHash(Password, user.PasswordHash))
+            if (!ModelState.IsValid)
             {
-                // Set session or cookie here
-                HttpContext.Session.SetString("Username", Username);
-                return RedirectToPage("/Index");S
+                ErrorMessage = "Invalid login attempt.";
+                return Page();
             }
 
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            var user = _context.ApplicationUsers.SingleOrDefault(u => u.Username == Input.Email); // Assuming Email is used for Username
+
+         
+
+            if (user != null && Input.Password == user.PasswordHash) // Compare plaintext passwords
+            {
+                // Set session or cookie here
+                HttpContext.Session.SetString("Username", Input.Email);
+                return RedirectToPage("/Dashboard"); // Correct redirect format
+
+            }
+
+            ErrorMessage = "Invalid login attempt.";
             return Page();
         }
 
-        private bool VerifyPasswordHash(string password, string storedHash)
+        public class InputModel
         {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-                return hashString == storedHash;
-            }
-        }
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
 
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-            }
+            [Required]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
         }
     }
 }

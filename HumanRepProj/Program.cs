@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using HumanRepProj.Data; // Replace 'YourNamespace' with the actual namespace of your project
+using HumanRepProj.Data; // Ensure this namespace is correct
 using Microsoft.Extensions.DependencyInjection; // Add this using directive
+using Microsoft.EntityFrameworkCore.SqlServer; // Add this using directive
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,8 @@ builder.Services.AddSession();
 
 // Configure the database context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure()));
 
 var app = builder.Build();
 
@@ -31,7 +33,12 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapRazorPages();
-    endpoints.MapFallbackToPage("/Login");
+    // This will redirect the root URL to the Login page
+    endpoints.MapGet("/", context =>
+    {
+        context.Response.Redirect("/Login");
+        return Task.CompletedTask;
+    });
 });
 
 app.Run();
