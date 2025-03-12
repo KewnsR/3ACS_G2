@@ -37,7 +37,7 @@ namespace HumanRepProj.Pages
 
          
 
-            if (user != null && Input.Password == user.PasswordHash) // Compare plaintext passwords
+            if (user != null && Input.Password == user.Password) // Compare plaintext passwords
             {
                 // Set session or cookie here
                 HttpContext.Session.SetString("Username", Input.Email);

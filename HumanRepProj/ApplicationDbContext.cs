@@ -26,7 +26,7 @@ namespace HumanRepProj.Data
             modelBuilder.Entity<ApplicationUser>()
                 .Property(u => u.Username).HasColumnName("Username");
             modelBuilder.Entity<ApplicationUser>()
-                .Property(u => u.PasswordHash).HasColumnName("PasswordHash");
+                .Property(u => u.Password).HasColumnName("Password"); // Updated column name
             modelBuilder.Entity<ApplicationUser>()
                 .Property(u => u.LastLogin).HasColumnName("LastLogin");
             modelBuilder.Entity<ApplicationUser>()
