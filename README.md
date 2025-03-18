@@ -8,5 +8,5 @@ This project is an **HRIS (Human Resource Information System)** built using **AS
 
 ### **1. Clone the Repository**
 ```bash
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/KewnsR/3ACS_G2.git
 dotnet restore
