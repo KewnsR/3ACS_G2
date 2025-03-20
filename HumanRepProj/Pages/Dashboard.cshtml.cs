@@ -9,9 +9,6 @@ namespace HumanRepProj.Pages
     {
         private readonly ILogger<DashboardModel> _logger;
 
-        public string UserEmail { get; private set; } // Holds user email
-        public string UserName { get; private set; }  // Holds user full name
-
         public DashboardModel(ILogger<DashboardModel> logger)
         {
             _logger = logger;
@@ -19,19 +16,24 @@ namespace HumanRepProj.Pages
 
         public IActionResult OnGet()
         {
-            // ✅ Use "Username" for session consistency
-            UserEmail = HttpContext.Session.GetString("Username");
-            UserName = HttpContext.Session.GetString("UserName");
+            var userEmail = HttpContext.Session.GetString("Username");
 
-            if (string.IsNullOrEmpty(UserEmail))
+            if (string.IsNullOrEmpty(userEmail))
             {
                 _logger.LogWarning("Session expired or user not logged in.");
                 return RedirectToPage("/Login");
             }
 
-            _logger.LogInformation($"User {UserEmail} logged into the dashboard.");
-
+            _logger.LogInformation($"User {userEmail} accessed the Dashboard.");
             return Page();
+        }
+
+        // ✅ Logout handler
+        public IActionResult OnPostLogout()
+        {
+            _logger.LogInformation("User logged out.");
+            HttpContext.Session.Clear(); // Clear session
+            return RedirectToPage("/Login");
         }
     }
 }

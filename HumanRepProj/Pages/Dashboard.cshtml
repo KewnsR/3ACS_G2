@@ -4,74 +4,154 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="dashboard-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <h2>HRIS</h2>
-        <nav>
-            <a href="Dashboard" class="menu-item active"><i class="fas fa-home"></i> Dashboard</a>
-            <a href="Employees" class="menu-item"><i class="fas fa-users"></i> Employees</a>
-            <a href="Departments" class="menu-item"><i class="fas fa-building"></i> Departments</a>
-            <a href="Attendance" class="menu-item"><i class="fas fa-clock"></i> Attendance</a>
-            <a href="Reports" class="menu-item"><i class="fas fa-file-alt"></i> Reports</a>
-            <a href="Payroll" class="menu-item"><i class="fas fa-pay"></i> Payroll</a>
-            <a href="Settings" class="menu-item"><i class="fas fa-set"></i> Settings</a>
-        </nav>
-    </aside>
+<h1>@ViewData["Title"]</h1>
 
-    <!-- Main Content -->
-    <main class="dashboard-content">
-        <header class="header">
-            <input type="text" class="search-box" placeholder="Search...">
-            <div class="user-icon">
-                <span class="notification-dot"></span>
-                <img src="~/images/user-icon.png" alt="User">
-            </div>
-        </header>
+<aside class="sidebar">
+    <h2>HRIS</h2>
+    <nav>
+        <a href="Dashboard" class="menu-item active"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="Employees" class="menu-item"><i class="fas fa-users"></i> Employees</a>
+        <a href="Departments" class="menu-item"><i class="fas fa-building"></i> Departments</a>
+        <a href="Attendance" class="menu-item"><i class="fas fa-clock"></i> Attendance</a>
+        <a href="Reports" class="menu-item"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="Payroll" class="menu-item"><i class="fas fa-dollar-sign"></i> Payroll</a>
+        <a href="Settings" class="menu-item"><i class="fas fa-cogs"></i> Settings</a>
 
-        <h1>Dashboard</h1>
-        <p>Overview of your HR system</p>
+        <!-- ✅ Logout Button -->
+        <button type="button" class="menu-item logout-button" onclick="openLogoutPopup()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="logout-text">Logout</span>
+        </button>
+    </nav>
+</aside>
 
-        <div class="dashboard-cards">
-            <div class="card">
-                <h3>Total Employees</h3>
-                <p>142</p>
-            </div>
-            <div class="card">
-                <h3>Departments</h3>
-                <p>8</p>
-            </div>
-            <div class="card">
-                <h3>Attendance Rate</h3>
-                <p>94%</p>
-            </div>
-            <div class="card">
-                <h3>Productivity</h3>
-                <p>87%</p>
-            </div>]\
+<p>Welcome to the HRIS Dashboard!</p>
+
+<!-- ✅ Logout Confirmation Popup -->
+<div id="logoutPopup" class="popup-overlay">
+    <div class="popup-content">
+        <p>Are you sure you want to log out?</p>
+        <div class="popup-buttons">
+            <form method="post" asp-page-handler="Logout">
+                <button type="submit" class="btn-confirm">Yes</button>
+            </form>
+            <button onclick="closeLogoutPopup()" class="btn-cancel">Cancel</button>
         </div>
-
-        <div class="activities">
-            <div class="activity-box">
-                <h3>Recent Activities</h3>
-                <div class="activity-item">
-                    <img src="~/images/user1.png" alt="">
-                    <p><strong>John Doe</strong> Updated profile</p>
-                </div>
-                <div class="activity-item">
-                    <img src="~/images/user2.png" alt="">
-                    <p><strong>Jane Smith</strong> Requested leave</p>
-                </div>
-            </div>
-
-            <div class="activity-box">
-                <h3>Department Distribution</h3>
-                <p>Engineering: 42</p>
-                <p>Marketing: 28</p>
-                <p>Sales: 35</p>
-                <p>HR: 15</p>
-                <p>Finance: 22</p>
-            </div>
-        </div>
-    </main>
+    </div>
 </div>
+
+<!-- ✅ JavaScript for Popup -->
+<script>
+    function openLogoutPopup() {
+        document.getElementById('logoutPopup').style.display = 'flex';
+    }
+
+    function closeLogoutPopup() {
+        document.getElementById('logoutPopup').style.display = 'none';
+    }
+</script>
+
+<!-- ✅ Styling -->
+<style>
+    /* ✅ Sidebar and Menu */
+    .sidebar {
+        width: 250px;
+        float: left;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        color: #333;
+        text-decoration: none;
+        font-size: 16px;
+        gap: 10px;
+        transition: background 0.3s ease;
+        border-radius: 4px;
+    }
+
+        .menu-item.active,
+        .menu-item:hover {
+            background-color: #f0f0f0;
+        }
+
+    /* ✅ Logout Button */
+    .logout-button {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 10px;
+        width: 100%;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        border-radius: 4px;
+        transition: background 0.3s ease;
+        margin-top: 20px;
+    }
+
+        .logout-button:hover {
+            background-color: #cc0000;
+        }
+
+    /* ✅ Popup Overlay */
+    .popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+    }
+
+    .popup-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        width: 300px;
+        text-align: center;
+    }
+
+    .popup-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-confirm, .btn-cancel {
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 4px;
+        transition: background 0.3s ease;
+    }
+
+    .btn-confirm {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+        .btn-confirm:hover {
+            background-color: #45a049;
+        }
+
+    .btn-cancel {
+        background-color: #ff4d4d;
+        color: white;
+    }
+
+        .btn-cancel:hover {
+            background-color: #cc0000;
+        }
+</style>
