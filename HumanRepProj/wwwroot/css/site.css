@@ -171,7 +171,6 @@ p {
         font-weight: bold;
     }
 
-
 /* 📌 Dashboard Main Content */
 .dashboard-container {
     display: flex;
@@ -310,3 +309,65 @@ p {
         border-radius: 50%;
         margin-right: 10px;
     }
+
+/* 📌 Settings Main Content */
+.settings-container {
+    display: flex;
+    width: 100%;
+}
+
+.settings-content {
+    margin-left: 270px;
+    padding: 25px;
+    width: 100%;
+}
+
+    .settings-content h1 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .settings-content .form-group {
+        margin-bottom: 20px;
+    }
+
+        .settings-content .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .settings-content .form-group input,
+        .settings-content .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #f8f9fd;
+            outline: none;
+            transition: 0.3s;
+        }
+
+            .settings-content .form-group input:focus,
+            .settings-content .form-group select:focus {
+                border-color: #0e0e21;
+            }
+
+    .settings-content .btn {
+        width: 100%;
+        background-color: #0e0e21;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .settings-content .btn:hover {
+            background-color: #232339;
+        }
