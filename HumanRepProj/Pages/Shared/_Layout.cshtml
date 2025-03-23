@@ -28,30 +28,7 @@
         </nav>
     </div>
 
-    <!-- Main Content -->
-    <div class="content">
-        <!-- Header -->
-        <div class="header">
-            <input type="text" class="search-box" placeholder="Search...">
-
-            <div class="user-info">
-                <!-- Notifications -->
-                <div class="notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-dot"></span>
-                </div>
-
-                <!-- User Profile -->
-                <div class="user-profile">
-                    <img src="~/images/user-icon.png" alt="User" class="user-avatar">
-                    <div class="user-dropdown">
-                        <p class="user-name">@Context.Session.GetString("UserName")</p>
-                        <p class="user-email">@Context.Session.GetString("UserEmail")</p>
-                        <a href="/Logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    
 
         <!-- Page Content -->
         <main role="main">
