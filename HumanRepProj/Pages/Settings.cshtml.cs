@@ -88,7 +88,7 @@ namespace HumanRepProj.Pages
         {
             // Logout logic here
 
-            return RedirectToPage("Index");
+            return RedirectToPage("Login");
         }
     }
 }

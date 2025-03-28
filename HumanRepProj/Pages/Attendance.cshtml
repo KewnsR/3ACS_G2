@@ -6,16 +6,19 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<aside class="sidebar">
-    <h2>HRIS</h2>
-    <nav>
-        <a href="Dashboard" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
-        <a href="Employees" class="menu-item"><i class="fas fa-users"></i> Employees</a>
-        <a href="Departments" class="menu-item"><i class="fas fa-building"></i> Departments</a>
-        <a href="Attendance" class="menu-item active"><i class="fas fa-clock"></i> Attendance</a>
-        <a href="Reports" class="menu-item"><i class="fas fa-file-alt"></i> Reports</a>
-        <a href="Payroll" class="menu-item"><i class="fas fa-dollar-sign"></i> Payroll</a>
-        <a href="Settings" class="menu-item"><i class="fas fa-cogs"></i> Settings</a>
+<div class="attendance-container">
+    <aside class="sidebar">
+        <h2>HRIS</h2>
+        <nav class="menu">
+            <a href="Dashboard" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="Employees" class="menu-item"><i class="fas fa-users"></i> Employees</a>
+            <a href="Departments" class="menu-item"><i class="fas fa-building"></i> Departments</a>
+            <a href="Attendance" class="menu-item active"><i class="fas fa-clock"></i> Attendance</a>
+            <a href="Reports" class="menu-item"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="Payroll" class="menu-item"><i class="fas fa-dollar-sign"></i> Payroll</a>
+            <a href="Settings" class="menu-item"><i class="fas fa-cogs"></i> Settings</a>
+        </nav>
+
 
         <!-- ✅ Logout Button -->
         <button type="button" class="menu-item logout-button" onclick="openLogoutPopup()">
@@ -25,8 +28,39 @@
     </nav>
 </aside>
 
-<p>Use this page to detail your HRIS Attendance.</p>
-
+<main class="content">
+    <div class="attendance-header">
+        <h2>Attendance Records</h2>
+        <button class="btn-add-record">Add Record</button>
+    </div>
+    <div class="attendance-list">
+        <!-- Example attendance items -->
+        <div class="attendance-item">
+            <div class="attendance-info">
+                <h3>John Doe</h3>
+                <p>Date: 2023-10-01</p>
+                <p>Status: Present</p>
+            </div>
+            <div class="attendance-actions">
+                <button class="btn-edit">Edit</button>
+                <button class="btn-delete">Delete</button>
+            </div>
+        </div>
+        <div class="attendance-item">
+            <div class="attendance-info">
+                <h3>Jane Smith</h3>
+                <p>Date: 2023-10-01</p>
+                <p>Status: Absent</p>
+            </div>
+            <div class="attendance-actions">
+                <button class="btn-edit">Edit</button>
+                <button class="btn-delete">Delete</button>
+            </div>
+        </div>
+        <!-- Add more attendance items as needed -->
+    </div>
+</main>
+</div>
 <!-- ✅ Logout Confirmation Popup -->
 <div id="logoutPopup" class="popup-overlay">
     <div class="popup-content">
@@ -57,6 +91,14 @@
     .sidebar {
         width: 250px;
         float: left;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .menu {
+        flex-grow: 1;
+        margin-bottom: 50px;
     }
 
     .menu-item {
@@ -91,11 +133,95 @@
         gap: 10px;
         border-radius: 4px;
         transition: background 0.3s ease;
-        margin-top: 20px;
+        margin-top: auto;
+        margin-bottom: 32px;
     }
 
         .logout-button:hover {
             background-color: #cc0000;
+        }
+
+    /* ✅ Main Content */
+    .content {
+        margin-left: 270px;
+        padding: 20px;
+        background-color: #ecf0f1;
+        min-height: 100vh;
+    }
+
+    .attendance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-add-record {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 4px;
+        transition: background 0.3s ease;
+    }
+
+        .btn-add-record:hover {
+            background-color: #2980b9;
+        }
+
+    .attendance-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .attendance-item {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: calc(50% - 20px);
+    }
+
+    .attendance-info {
+        flex: 1;
+    }
+
+    .attendance-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-edit, .btn-delete {
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 4px;
+        transition: background 0.3s ease;
+    }
+
+    .btn-edit {
+        background-color: #f39c12;
+        color: white;
+    }
+
+        .btn-edit:hover {
+            background-color: #e67e22;
+        }
+
+    .btn-delete {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
         }
 
     /* ✅ Popup Overlay */

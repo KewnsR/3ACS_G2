@@ -6,16 +6,18 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<aside class="sidebar">
-    <h2>HRIS</h2>
-    <nav>
-        <a href="Dashboard" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
-        <a href="Employees" class="menu-item active"><i class="fas fa-users"></i> Employees</a>
-        <a href="Departments" class="menu-item"><i class="fas fa-building"></i> Departments</a>
-        <a href="Attendance" class="menu-item"><i class="fas fa-clock"></i> Attendance</a>
-        <a href="Reports" class="menu-item"><i class="fas fa-file-alt"></i> Reports</a>
-        <a href="Payroll" class="menu-item"><i class="fas fa-dollar-sign"></i> Payroll</a>
-        <a href="Settings" class="menu-item"><i class="fas fa-cogs"></i> Settings</a>
+<div class="employees-container">
+    <aside class="sidebar">
+        <h2>HRIS</h2>
+        <nav class="menu">
+            <a href="Dashboard" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="Employees" class="menu-item active"><i class="fas fa-users"></i> Employees</a>
+            <a href="Departments" class="menu-item"><i class="fas fa-building"></i> Departments</a>
+            <a href="Attendance" class="menu-item"><i class="fas fa-clock"></i> Attendance</a>
+            <a href="Reports" class="menu-item"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="Payroll" class="menu-item"><i class="fas fa-dollar-sign"></i> Payroll</a>
+            <a href="Settings" class="menu-item"><i class="fas fa-cogs"></i> Settings</a>
+        </nav>
 
         <!-- ✅ Logout Button -->
         <button type="button" class="menu-item logout-button" onclick="openLogoutPopup()">
@@ -24,6 +26,7 @@
         </button>
     </nav>
 </aside>
+</div>
 
 <!-- ✅ Logout Confirmation Popup -->
 <div id="logoutPopup" class="popup-overlay">
@@ -115,12 +118,14 @@
     .sidebar {
         width: 250px;
         float: left;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
     }
 
     .menu {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+        flex-grow: 1;
+        margin-bottom: 50px;
     }
 
     .menu-item {
@@ -154,7 +159,8 @@
         gap: 10px;
         border-radius: 4px;
         transition: background 0.3s ease;
-        margin-top: 20px;
+        margin-top: auto;
+        margin-bottom: 32px;
     }
 
         .logout-button:hover {
