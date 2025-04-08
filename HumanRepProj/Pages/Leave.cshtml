@@ -1,19 +1,18 @@
 ﻿@page
-@model DepartmentsModel
+@model LeaveModel
 @{
-    ViewData["Title"] = "Departments";
+    ViewData["Title"] = "Leave Request";
 }
 
-<h1>@ViewData["Title"]</h1>
-
+<!-- Sidebar with Navigation and Logout -->
 <aside class="sidebar">
     <h2>HRIS</h2>
     <nav>
         <a href="Dashboard" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
         <a href="Employees" class="menu-item"><i class="fas fa-users"></i> Employees</a>
-        <a href="Departments" class="menu-item active"><i class="fas fa-building"></i> Departments</a>
+        <a href="Departments" class="menu-item"><i class="fas fa-building"></i> Departments</a>
         <a href="Attendance" class="menu-item"><i class="fas fa-clock"></i> Attendance</a>
-        <a href="Leave" class="menu-item"><i class="fas fa-clock"></i> Leave</a>
+        <a href="Leave" class="menu-item active"><i class="fas fa-clock"></i> Leave</a>
         <a href="Reports" class="menu-item"><i class="fas fa-file-alt"></i> Reports</a>
         <a href="Payroll" class="menu-item"><i class="fas fa-dollar-sign"></i> Payroll</a>
         <a href="Settings" class="menu-item"><i class="fas fa-cogs"></i> Settings</a>
@@ -26,7 +25,43 @@
     </nav>
 </aside>
 
-<p>Use this page to show the list of HRIS departments with CRUD.</p>
+<!-- Main Content -->
+<main style="margin-left: 270px; padding: 20px;">
+    <h2>Leave Request Form</h2>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-success">@Model.Message</div>
+    }
+
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Input.EmployeeName"></label>
+            <input asp-for="Input.EmployeeName" class="form-control" />
+            <span asp-validation-for="Input.EmployeeName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Input.StartDate"></label>
+            <input asp-for="Input.StartDate" class="form-control" type="date" />
+            <span asp-validation-for="Input.StartDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Input.EndDate"></label>
+            <input asp-for="Input.EndDate" class="form-control" type="date" />
+            <span asp-validation-for="Input.EndDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Input.Reason"></label>
+            <textarea asp-for="Input.Reason" class="form-control"></textarea>
+            <span asp-validation-for="Input.Reason" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</main>
 
 <!-- ✅ Logout Confirmation Popup -->
 <div id="logoutPopup" class="popup-overlay">
@@ -41,7 +76,7 @@
     </div>
 </div>
 
-<!-- ✅ JavaScript for Popup -->
+<!-- ✅ JavaScript -->
 <script>
     function openLogoutPopup() {
         document.getElementById('logoutPopup').style.display = 'flex';
@@ -52,9 +87,8 @@
     }
 </script>
 
-<!-- ✅ Styling -->
+<!-- ✅ Styling (reuse from Attendance.cshtml) -->
 <style>
-    /* ✅ Sidebar and Menu */
     .sidebar {
         width: 250px;
         float: left;
@@ -77,7 +111,6 @@
             background-color: #f0f0f0;
         }
 
-    /* ✅ Logout Button */
     .logout-button {
         background-color: #ff4d4d;
         color: white;
@@ -99,7 +132,6 @@
             background-color: #cc0000;
         }
 
-    /* ✅ Popup Overlay */
     .popup-overlay {
         display: none;
         position: fixed;
@@ -122,6 +154,11 @@
         width: 300px;
         text-align: center;
     }
+
+        .popup-content p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
 
     .popup-buttons {
         display: flex;

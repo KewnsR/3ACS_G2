@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace HumanRepProj.Pages
 {
@@ -84,11 +87,13 @@ namespace HumanRepProj.Pages
             return RedirectToPage("Settings");
         }
 
-        public IActionResult OnPostLogout()
+        // ✅ Proper logout logic
+        public async Task<IActionResult> OnPostLogoutAsync()
         {
-            // Logout logic here
+            HttpContext.Session.Clear(); // Clear session
+            await HttpContext.SignOutAsync(); // Sign out if using authentication
 
-            return RedirectToPage("Index");
+            return RedirectToPage("/Login"); // Redirect to login page
         }
     }
 }
