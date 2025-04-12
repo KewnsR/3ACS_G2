@@ -92,12 +92,9 @@ namespace HumanRepProj.Pages
         {
             HttpContext.Session.Clear(); // Clear session
             await HttpContext.SignOutAsync(); // Sign out if using authentication
-
-<<<<<<< HEAD
             return RedirectToPage("/Login"); // Redirect to login page
-=======
-            return RedirectToPage("Login");
->>>>>>> refs/remotes/origin/master
+
+            
         }
     }
 }

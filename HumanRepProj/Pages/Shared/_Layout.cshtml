@@ -1,39 +1,253 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HRIS</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
-    <link rel="stylesheet" href="~/css/Dashboard.css" asp-append-version="true">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- FontAwesome for Icons -->
-    <script src="https://kit.fontawesome.com/your-fontawesome-key.js" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+
+    <style>
+        /* Fixed sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 250px;
+            background-color: #212529;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+        }
+
+        /* Sidebar menu styles */
+        .menu {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+            .menu-item:hover {
+                color: white;
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .menu-item.active {
+                color: white;
+                background-color: rgba(13, 110, 253, 0.2);
+                border-left: 4px solid #0d6efd;
+            }
+
+            .menu-item i {
+                margin-right: 10px;
+                width: 20px;
+                text-align: center;
+            }
+
+        /* Logout button styles */
+        .logout-button {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: white;
+            background-color: #dc3545;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: all 0.3s;
+            margin-top: auto;
+            border-left: 4px solid transparent;
+        }
+
+            .logout-button:hover {
+                background-color: #bb2d3b;
+                color: white;
+            }
+
+            .logout-button i {
+                margin-right: 10px;
+                width: 20px;
+                text-align: center;
+            }
+
+        /* Button highlight styles */
+        .btn:focus, .btn:active {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.5);
+            transform: translateY(1px);
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>HRIS</h2>
-        <nav>
-            <a href="/Dashboard" class="menu-item active"><i class="fas fa-home"></i> Dashboard</a>
-            <a href="/Employees" class="menu-item"><i class="fas fa-users"></i> Employees</a>
-            <a href="/Departments" class="menu-item"><i class="fas fa-building"></i> Departments</a>
-            <a href="/Attendance" class="menu-item"><i class="fas fa-calendar-check"></i> Attendance</a>
-            <a href="/LeaveRequests" class="menu-item"><i class="fas fa-file-alt"></i> Leave Requests</a>
-            <a href="/Reports" class="menu-item"><i class="fas fa-chart-line"></i> Reports</a>
-            <a href="/Documents" class="menu-item"><i class="fas fa-folder"></i> Documents</a>
-            <a href="/Settings" class="menu-item"><i class="fas fa-cog"></i> Settings</a>
-        </nav>
+    <!-- Fixed Sidebar -->
+    <aside class="sidebar">
+        <div class="px-3 py-4">
+            <h2 class="text-white mb-4">HRIS</h2>
+            <nav class="menu">
+                <a href="/Dashboard" class="menu-item" id="dashboard-btn">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="/Employees" class="menu-item" id="employees-btn">
+                    <i class="fas fa-users"></i> Employees
+                </a>
+                <a href="/Departments" class="menu-item" id="departments-btn">
+                    <i class="fas fa-building"></i> Departments
+                </a>
+                <a href="/Attendance" class="menu-item" id="attendance-btn">
+                    <i class="fas fa-clock"></i> Attendance
+                </a>
+                <a href="/Leave" class="menu-item" id="leave-btn">
+                    <i class="fas fa-calendar-alt"></i> Leave
+                </a>
+                <a href="/Reports" class="menu-item" id="reports-btn">
+                    <i class="fas fa-file-alt"></i> Reports
+                </a>
+                <a href="/Payroll" class="menu-item" id="payroll-btn">
+                    <i class="fas fa-dollar-sign"></i> Payroll
+                </a>
+                <a href="/Settings" class="menu-item" id="settings-btn">
+                    <i class="fas fa-cogs"></i> Settings
+                </a>
+
+                <!-- Logout Button -->
+                <button type="button" class="logout-button" onclick="openLogoutPopup()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="logout-text">Logout</span>
+                </button>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to log out?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="post" asp-page-handler="Logout">
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
-    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Page Content -->
-        <main role="main">
-            @RenderBody()
-        </main>
-    </div>
+    @RenderSection("Scripts", required: false)
+
+    <script>
+        // Function to handle logout popup
+        function openLogoutPopup() {
+            var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+            logoutModal.show();
+        }
+
+        // Highlight active menu item based on current page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get current path
+            const currentPath = window.location.pathname.toLowerCase();
+
+            // Remove active class from all menu items
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Find and highlight the current page's menu item
+            let activeItem = null;
+
+            if (currentPath.includes('/dashboard')) {
+                activeItem = document.getElementById('dashboard-btn');
+            } else if (currentPath.includes('/employees')) {
+                activeItem = document.getElementById('employees-btn');
+            } else if (currentPath.includes('/departments')) {
+                activeItem = document.getElementById('departments-btn');
+            } else if (currentPath.includes('/attendance')) {
+                activeItem = document.getElementById('attendance-btn');
+            } else if (currentPath.includes('/leaverequests')) {
+                activeItem = document.getElementById('leave-btn');
+            } else if (currentPath.includes('/reports')) {
+                activeItem = document.getElementById('reports-btn');
+            } else if (currentPath.includes('/payroll')) {
+                activeItem = document.getElementById('payroll-btn');
+            } else if (currentPath.includes('/settings')) {
+                activeItem = document.getElementById('settings-btn');
+            }
+
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+
+            // Button click effects
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mousedown', function() {
+                    this.style.transform = 'translateY(1px)';
+                });
+                button.addEventListener('mouseup', function() {
+                    this.style.transform = '';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
+            });
+        });
+    </script>
 </body>
 </html>
