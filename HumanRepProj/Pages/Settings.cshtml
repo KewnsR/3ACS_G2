@@ -7,10 +7,16 @@
 
 @section Styles {
     <style>
-        .settings-card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .settings-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .settings-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 2rem;
         }
 
         .profile-avatar {
@@ -18,36 +24,41 @@
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
+            border: 3px solid #0d6efd;
         }
 
-        .company-logo-img {
-            width: 120px;
-            height: 120px;
-            object-fit: contain;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            display: block;
         }
 
-        .nav-pills .nav-link.active {
+        .recovery-codes {
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .btn-copy {
             background-color: #0d6efd;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
         }
+
+            .btn-copy:hover {
+                background-color: #0056b3;
+            }
     </style>
 }
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">System Settings</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <button type="button" class="btn btn-sm btn-outline-secondary me-2">
-            <i class="bi bi-gear"></i> Advanced Settings
-        </button>
-        <button type="button" class="btn btn-sm btn-primary">
-            <i class="bi bi-save"></i> Save All Changes
-        </button>
-    </div>
-</div>
-
 <div class="row">
     <div class="col-md-3">
+        <!-- Navigation Menu -->
         <div class="card settings-card mb-4">
             <div class="card-header bg-white">
                 <h5 class="mb-0">Settings Menu</h5>
@@ -60,47 +71,19 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="pill" href="#company-tab">
-                            <i class="bi bi-building me-2"></i> Company
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="pill" href="#security-tab">
-                            <i class="bi bi-shield-lock me-2"></i> Security
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="pill" href="#notifications-tab">
-                            <i class="bi bi-bell me-2"></i> Notifications
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="pill" href="#integrations-tab">
-                            <i class="bi bi-plug me-2"></i> Integrations
+                        <a class="nav-link" data-bs-toggle="pill" href="#otp-tab">
+                            <i class="bi bi-shield-lock me-2"></i> OTP
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
-
-        <div class="card settings-card">
-            <div class="card-body text-center">
-                <img src="images/lebronjamespic.png" alt="User Avatar" class="profile-avatar mb-3">
-                <h5>Lebron James</h5>
-                <p class="text-muted">HR Manager</p>
-                <button class="btn btn-sm btn-outline-primary w-100 mb-2">
-                    <i class="bi bi-pencil"></i> Edit Profile
-                </button>
-                <button class="btn btn-sm btn-outline-secondary w-100">
-                    <i class="bi bi-key"></i> Change Password
-                </button>
-            </div>
-        </div>
     </div>
 
     <div class="col-md-9">
+        <!-- Tab Content -->
         <div class="tab-content">
-            <!-- Profile Tab -->
+            <!-- Profile Section -->
             <div class="tab-pane fade show active" id="profile-tab">
                 <div class="card settings-card mb-4">
                     <div class="card-header bg-white">
@@ -155,50 +138,24 @@
                 </div>
             </div>
 
-            <!-- Company Tab -->
-            <div class="tab-pane fade" id="company-tab">
+            <!-- OTP Section -->
+            <div class="tab-pane fade" id="otp-tab">
                 <div class="card settings-card">
                     <div class="card-header bg-white">
-                        <h5 class="mb-0">Company Information</h5>
+                        <h5 class="mb-0">OTP Settings</h5>
                     </div>
                     <div class="card-body">
                         <form>
-                            <div class="row mb-4">
-                                <div class="col-md-4 text-center">
-                                    <img src="company-logo.png" alt="Company Logo" class="company-logo-img mb-3">
-                                    <div class="d-grid gap-2">
-                                        <button type="button" class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-upload"></i> Upload New
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm">
-                                            <i class="bi bi-trash"></i> Remove
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label for="companyName" class="form-label">Company Name</label>
-                                            <input type="text" class="form-control" id="companyName" value="Acme Corporation">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="industry" class="form-label">Industry</label>
-                                            <input type="text" class="form-control" id="industry" value="Technology">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="companyEmail" class="form-label">Company Email</label>
-                                            <input type="email" class="form-control" id="companyEmail" value="info@acmecorp.com">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="companyPhone" class="form-label">Company Phone</label>
-                                            <input type="tel" class="form-control" id="companyPhone" value="+1 (555) 987-6543">
-                                        </div>
-                                        <div class="col-12">
-                                            <label for="address" class="form-label">Address</label>
-                                            <textarea class="form-control" id="address" rows="2">Kid From Akron, Ohio, United States</textarea>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="mb-3">
+                                <label for="otpStatus" class="form-label">Enable OTP</label>
+                                <select class="form-select" id="otpStatus">
+                                    <option value="enabled">Enabled</option>
+                                    <option value="disabled" selected>Disabled</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="otpPhone" class="form-label">Phone Number for OTP</label>
+                                <input type="tel" class="form-control" id="otpPhone" placeholder="+1 (555) 123-4567">
                             </div>
                             <div class="text-end">
                                 <button type="submit" class="btn btn-primary">
@@ -209,20 +166,10 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Other tabs would go here -->
-            <div class="tab-pane fade" id="security-tab">
-                <!-- Security settings content -->
-            </div>
-            <div class="tab-pane fade" id="notifications-tab">
-                <!-- Notification settings content -->
-            </div>
-            <div class="tab-pane fade" id="integrations-tab">
-                <!-- Integration settings content -->
-            </div>
         </div>
     </div>
 </div>
+
 
 @section Scripts {
     <script>

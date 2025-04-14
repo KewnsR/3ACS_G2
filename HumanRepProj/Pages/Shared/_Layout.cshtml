@@ -89,19 +89,12 @@
             border-radius: 4px;
             transition: background 0.3s ease;
             margin-top: auto;
-            margin-bottom: 32px;
+            margin-bottom: -30px;
         }
 
             .logout-button:hover {
                 background-color: #cc0000;
             }
-
-        margin-top: auto; /* Adjust this line */
-        }
-
-        .logout-button:hover {
-            background-color: #cc0000;
-        }
 
         /* ✅ Popup Overlay */
         .popup-overlay {
@@ -184,9 +177,9 @@
 <body>
     <!-- Fixed Sidebar -->
     <aside class="sidebar">
-        <div class="px-3 py-4">
+        <div class="px-3 py-4 d-flex flex-column h-100">
             <h2 class="text-white mb-4">HRIS</h2>
-            <nav class="menu">
+            <nav class="menu flex-grow-1">
                 <a href="/Dashboard" class="menu-item" id="dashboard-btn">
                     <i class="fas fa-home"></i> Dashboard
                 </a>
@@ -199,27 +192,28 @@
                 <a href="/Attendance" class="menu-item" id="attendance-btn">
                     <i class="fas fa-clock"></i> Attendance
                 </a>
-                <a href="/Leave" class="menu-item" id="leave-btn">
-                    <i class="fas fa-calendar-alt"></i> Leave
-                </a>
                 <a href="/Reports" class="menu-item" id="reports-btn">
                     <i class="fas fa-file-alt"></i> Reports
                 </a>
                 <a href="/Payroll" class="menu-item" id="payroll-btn">
                     <i class="fas fa-dollar-sign"></i> Payroll
                 </a>
+                <a href="/Leave" class="menu-item" id="leave-btn">
+                    <i class="fas fa-calendar-alt"></i> Leave
+                </a>
                 <a href="/Settings" class="menu-item" id="settings-btn">
                     <i class="fas fa-cogs"></i> Settings
                 </a>
-
-                <!-- Logout Button -->
-                <button type="button" class="logout-button" onclick="openLogoutPopup()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="logout-text">Logout</span>
-                </button>
             </nav>
+
+            <!-- Logout Button -->
+            <button type="button" class="logout-button mt-auto" onclick="openLogoutPopup()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="logout-text">Logout</span>
+            </button>
         </div>
     </aside>
+
 
     <!-- Main Content -->
     <main class="main-content">
