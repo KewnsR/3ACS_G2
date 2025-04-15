@@ -5,6 +5,14 @@ using Microsoft.EntityFrameworkCore.SqlServer; // Add this using directive
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add authentication
+   builder.Services.AddAuthentication("CookieAuth")
+       .AddCookie("CookieAuth", options =>
+       {
+           options.LoginPath = "/Login";
+           options.LogoutPath = "/Logout";
+       });
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddSession();
@@ -29,6 +37,7 @@ app.UseRouting();
 
 app.UseSession();
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.UseEndpoints(endpoints =>
 {
