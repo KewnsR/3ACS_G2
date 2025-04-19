@@ -1,4 +1,166 @@
 ﻿@page
 @model HumanRepProj.Pages.ViewEmployeeModel
 @{
+    ViewData["Title"] = "Employee Details";
+    Layout = "_Layout";
 }
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Employee Details</h1>
+        <div>
+            <a asp-page="/EditEmployee" asp-route-id="@Model.Employee.EmployeeID" class="btn btn-primary me-2">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            <a asp-page="/Employees" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Profile and Quick Info -->
+        <div class="col-lg-4">
+            <!-- Profile Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <img src="https://i.pravatar.cc/150?img=@Model.Employee.EmployeeID"
+                         class="rounded-circle mb-3"
+                         width="150"
+                         height="150"
+                         alt="Employee Photo">
+                    <h3>@Model.Employee.FullName</h3>
+                    <p class="text-muted">EMP-@Model.Employee.EmployeeID.ToString("D4")</p>
+
+                    @{
+                        var badgeClass = Model.Employee.Status == "Active" ? "badge bg-success" :
+                        Model.Employee.Status == "On Leave" ? "badge bg-warning" : "badge bg-danger";
+                    }
+                    <span class="@badgeClass">@Model.Employee.Status</span>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Employment Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-muted">Position</h6>
+                        <h4>@Model.Employee.Position</h4>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-muted">Department</h6>
+                        <h4>@Model.Employee.Department?.Name</h4>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-muted">Employment Type</h6>
+                        <h4>@Model.Employee.EmploymentType</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manager Info -->
+            @if (Model.Employee.Manager != null)
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Reports To</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <img src="https://i.pravatar.cc/60?img=@Model.Employee.Manager.EmployeeID"
+                                 class="rounded-circle me-3"
+                                 alt="Manager Photo">
+                            <div>
+                                <h6 class="mb-1">@Model.Employee.Manager.FullName</h6>
+                                <p class="text-muted small mb-0">@Model.Employee.Manager.Position</p>
+                                <a href="mailto:@Model.Employee.Manager.Email" class="small">@Model.Employee.Manager.Email</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Right Column - Detailed Information -->
+        <div class="col-lg-8">
+            <!-- Personal Information -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">First Name</dt>
+                                <dd class="col-sm-8">@Model.Employee.FirstName</dd>
+
+                                <dt class="col-sm-4">Last Name</dt>
+                                <dd class="col-sm-8">@Model.Employee.LastName</dd>
+
+                                <dt class="col-sm-4">Date of Birth</dt>
+                                <dd class="col-sm-8">@Model.Employee.DateOfBirth.ToString("d")</dd>
+
+                                <dt class="col-sm-4">Gender</dt>
+                                <dd class="col-sm-8">@Model.Employee.Gender</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Email</dt>
+                                <dd class="col-sm-8"><a href="mailto:@Model.Employee.Email">@Model.Employee.Email</a></dd>
+
+                                <dt class="col-sm-4">Phone</dt>
+                                <dd class="col-sm-8">@Model.Employee.PhoneNumber</dd>
+
+                                <dt class="col-sm-4">Address</dt>
+                                <dd class="col-sm-8">@Model.Employee.Address</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employment Details -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Employment Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Department</dt>
+                                <dd class="col-sm-8">@Model.Employee.Department?.Name</dd>
+
+                                <dt class="col-sm-4">Position</dt>
+                                <dd class="col-sm-8">@Model.Employee.Position</dd>
+
+                                <dt class="col-sm-4">Hire Date</dt>
+                                <dd class="col-sm-8">@Model.Employee.DateHired.ToString("d")</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Employment Type</dt>
+                                <dd class="col-sm-8">@Model.Employee.EmploymentType</dd>
+
+                                <dt class="col-sm-4">Status</dt>
+                                <dd class="col-sm-8"><span class="@badgeClass">@Model.Employee.Status</span></dd>
+
+                                @if (Model.Employee.IsManager)
+                                {
+                                    <dt class="col-sm-4">Team Size</dt>
+                                    <dd class="col-sm-8">@Model.Subordinates.Count members</dd>
+                                }
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

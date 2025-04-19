@@ -1,5 +1,9 @@
 using HumanRepProj.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HumanRepProj.Data
 {
@@ -8,6 +12,7 @@ namespace HumanRepProj.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -16,7 +21,16 @@ namespace HumanRepProj.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure ApplicationUser (Logins table)
+            base.OnModelCreating(modelBuilder);
+
+            // Call the configuration methods
+            ConfigureApplicationUser(modelBuilder);
+            ConfigureEmployee(modelBuilder);
+            ConfigureDepartment(modelBuilder);
+        }
+
+        private void ConfigureApplicationUser(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.ToTable("Logins");
@@ -31,35 +45,31 @@ namespace HumanRepProj.Data
 
                 entity.Property(u => u.Username)
                     .IsRequired()
-                    .HasColumnName("Username")
-                    .HasMaxLength(50);
+                    .HasMaxLength(50)
+                    .HasColumnName("Username");
 
                 entity.Property(u => u.Password)
                     .IsRequired()
-                    .HasColumnName("Password")
-                    .HasMaxLength(255);
+                    .HasMaxLength(255)
+                    .HasColumnName("Password");
 
                 entity.Property(u => u.LastLogin)
+                    .HasColumnType("datetime2")
                     .HasColumnName("LastLogin");
 
-                entity.Property(u => u.FailedAttempts)
-                    .HasColumnName("FailedAttempts")
-                    .HasDefaultValue(0);
+                entity.HasIndex(u => u.Username)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Logins_Username");
 
-                entity.Property(u => u.IsLocked)
-                    .HasColumnName("IsLocked")
-                    .HasDefaultValue(false);
-
-                entity.Property(u => u.CreatedAt)
-                    .HasColumnName("CreatedAt")
-                    .HasDefaultValueSql("GETDATE()");
-
-                entity.Property(u => u.UpdatedAt)
-                    .HasColumnName("UpdatedAt")
-                    .HasDefaultValueSql("GETDATE()");
+                entity.HasOne(u => u.Employee)
+                    .WithMany()
+                    .HasForeignKey(u => u.EmployeeID)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
+        }
 
-            // Configure Department (Departments table)
+        private void ConfigureDepartment(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Department>(entity =>
             {
                 entity.ToTable("Departments");
@@ -69,85 +79,168 @@ namespace HumanRepProj.Data
                     .HasColumnName("DepartmentID")
                     .ValueGeneratedOnAdd();
 
-                // Match these to your actual database column names
                 entity.Property(d => d.Name)
                     .IsRequired()
-                    .HasColumnName("DepartmentName") // Updated to match DB
-                    .HasMaxLength(100);
+                    .HasMaxLength(100)
+                    .HasColumnName("DepartmentName");
 
-            
+                entity.HasIndex(d => d.Name)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Departments_Name");
+
+                entity.HasMany(d => d.Employees)
+                    .WithOne(e => e.Department)
+                    .HasForeignKey(e => e.DepartmentID)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
+        }
 
-            // Configure Employee (Employees table)
+        private void ConfigureEmployee(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Employee>(entity =>
             {
                 entity.ToTable("Employees");
                 entity.HasKey(e => e.EmployeeID);
 
+                // Basic Info
                 entity.Property(e => e.EmployeeID)
                     .HasColumnName("EmployeeID")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.FirstName)
                     .IsRequired()
-                    .HasColumnName("FirstName")
-                    .HasMaxLength(100);
+                    .HasMaxLength(100)
+                    .HasColumnName("FirstName");
 
                 entity.Property(e => e.LastName)
                     .IsRequired()
-                    .HasColumnName("LastName")
-                    .HasMaxLength(100);
+                    .HasMaxLength(100)
+                    .HasColumnName("LastName");
 
+                // Contact Info
                 entity.Property(e => e.Email)
-                    .HasColumnName("Email")
                     .HasMaxLength(255)
+                    .HasColumnName("Email")
                     .IsRequired(false);
 
                 entity.Property(e => e.PhoneNumber)
-                    .HasColumnName("PhoneNumber")
                     .HasMaxLength(20)
+                    .HasColumnName("PhoneNumber")
                     .IsRequired(false);
 
+                entity.Property(e => e.Address)
+                    .HasMaxLength(500)
+                    .HasColumnName("Address")
+                    .IsRequired(false);
+
+                // Employment Details
                 entity.Property(e => e.DepartmentID)
                     .IsRequired()
                     .HasColumnName("DepartmentID");
 
                 entity.Property(e => e.Position)
                     .IsRequired()
-                    .HasColumnName("Position")
-                    .HasMaxLength(100);
+                    .HasMaxLength(100)
+                    .HasColumnName("Position");
 
                 entity.Property(e => e.Salary)
                     .IsRequired()
-                    .HasColumnName("Salary")
-                    .HasColumnType("decimal(18,2)");
+                    .HasColumnType("decimal(18,2)")
+                    .HasColumnName("Salary");
+
+                // Dates
+                entity.Property(e => e.DateOfBirth)
+                    .HasColumnType("date")
+                    .HasColumnName("DateOfBirth");
 
                 entity.Property(e => e.DateHired)
                     .IsRequired()
-                    .HasColumnName("DateHired")
-                    .HasColumnType("date");
+                    .HasColumnType("date")
+                    .HasColumnName("DateHired");
 
+                // Status
                 entity.Property(e => e.Status)
                     .IsRequired()
-                    .HasColumnName("Status")
                     .HasMaxLength(50)
-                    .HasDefaultValue("Active");
+                    .HasDefaultValue("Active")
+                    .HasColumnName("Status");
 
-                // Relationship with Department
-                entity.HasOne(e => e.Department)
-                    .WithMany(d => d.Employees)
-                    .HasForeignKey(e => e.DepartmentID)
-                    .OnDelete(DeleteBehavior.Restrict);
+                entity.Property(e => e.EmploymentType)
+                    .HasMaxLength(20)
+                    .HasColumnName("EmploymentType")
+                    .HasDefaultValue("Full-time");
+
+                // Manager relationship
+                entity.Property(e => e.ManagerID)
+                    .HasColumnName("ManagerID")
+                    .IsRequired(false);
+
+                // Timestamps
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime2")
+                    .HasColumnName("CreatedAt")
+                    .HasDefaultValueSql("GETDATE()");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("datetime2")
+                    .HasColumnName("UpdatedAt")
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasDefaultValueSql("GETDATE()");
+
+                // Relationships
+                entity.HasOne(e => e.Manager)
+                    .WithMany(e => e.Subordinates)
+                    .HasForeignKey(e => e.ManagerID)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                // Indexes
+                entity.HasIndex(e => e.Email)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Employees_Email")
+                    .HasFilter("[Email] IS NOT NULL");
+
+                entity.HasIndex(e => e.ManagerID)
+                    .HasDatabaseName("IX_Employees_ManagerID");
             });
-
-            // Relationship between ApplicationUser and Employee
-            modelBuilder.Entity<ApplicationUser>()
-                .HasOne<Employee>()
-                .WithMany()
-                .HasForeignKey(u => u.EmployeeID)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            base.OnModelCreating(modelBuilder);
         }
+
+        public override int SaveChanges()
+        {
+            UpdateTimestamps();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateTimestamps();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateTimestamps()
+        {
+            var entries = ChangeTracker
+                .Entries()
+                .Where(e => e.Entity is BaseEntity &&
+                           (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+            var currentTime = DateTime.UtcNow;
+
+            foreach (var entry in entries)
+            {
+                var entity = (BaseEntity)entry.Entity;
+                if (entry.State == EntityState.Added)
+                {
+                    entity.CreatedAt = currentTime;
+                }
+                entity.UpdatedAt = currentTime;
+            }
+        }
+    }
+
+    public abstract class BaseEntity
+    {
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }

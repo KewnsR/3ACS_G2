@@ -1,4 +1,206 @@
-﻿@page
+﻿@page "{id:int}"
 @model HumanRepProj.Pages.EditEmployeeModel
 @{
+    ViewData["Title"] = "Edit Employee";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Edit Employee: @Model.Employee.FullName</h3>
+                    <div>
+                        <a asp-page="./ViewEmployee" asp-route-id="@Model.Employee.EmployeeID"
+                           class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-arrow-left"></i> Back to Profile
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <h5 class="alert-heading">Please fix these errors:</h5>
+                            <div asp-validation-summary="All" class="mb-0"></div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    else if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form method="post" class="needs-validation" novalidate>
+                        <input type="hidden" asp-for="Employee.EmployeeID" />
+
+                        <!-- Personal Information Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">Personal Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="Employee.FirstName" class="form-label"></label>
+                                    <input asp-for="Employee.FirstName" class="form-control" required />
+                                    <span asp-validation-for="Employee.FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Employee.LastName" class="form-label"></label>
+                                    <input asp-for="Employee.LastName" class="form-control" required />
+                                    <span asp-validation-for="Employee.LastName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Employee.Email" class="form-label"></label>
+                                    <input asp-for="Employee.Email" type="email" class="form-control" required />
+                                    <span asp-validation-for="Employee.Email" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Employee.PhoneNumber" class="form-label"></label>
+                                    <input asp-for="Employee.PhoneNumber" type="tel" class="form-control"
+                                           placeholder="e.g. 09087654321" />
+                                    <span asp-validation-for="Employee.PhoneNumber" class="text-danger"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Employee.Address" class="form-label"></label>
+                                    <textarea asp-for="Employee.Address" class="form-control" rows="2"
+                                              placeholder="123 Main St, Cityville"></textarea>
+                                    <span asp-validation-for="Employee.Address" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="Employee.DateOfBirth" class="form-label"></label>
+                                    <input type="date" asp-for="Employee.DateOfBirth" class="form-control"
+                                           max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    <span asp-validation-for="Employee.DateOfBirth" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="Employee.Gender" class="form-label"></label>
+                                    <select asp-for="Employee.Gender" asp-items="Model.GenderOptions" class="form-select" required>
+                                        <option value="">-- Select Gender --</option>
+                                    </select>
+                                    <span asp-validation-for="Employee.Gender" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Employment Information Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">Employment Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="Employee.DepartmentID" class="form-label"></label>
+                                    <select asp-for="Employee.DepartmentID" asp-items="Model.Departments" class="form-select" required>
+                                        <option value="">-- Select Department --</option>
+                                    </select>
+                                    <span asp-validation-for="Employee.DepartmentID" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Employee.Position" class="form-label"></label>
+                                    <input asp-for="Employee.Position" class="form-control" required
+                                           placeholder="e.g. CSR" />
+                                    <span asp-validation-for="Employee.Position" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="Employee.Salary" class="form-label"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Employee.Salary" type="number" step="0.01"
+                                               class="form-control" required />
+                                    </div>
+                                    <span asp-validation-for="Employee.Salary" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="Employee.ManagerID" class="form-label"></label>
+                                    <select asp-for="Employee.ManagerID" asp-items="Model.Managers" class="form-select">
+                                        <option value="">-- Select Manager --</option>
+                                    </select>
+                                    <span asp-validation-for="Employee.ManagerID" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="Employee.EmploymentType" class="form-label"></label>
+                                    <select asp-for="Employee.EmploymentType" asp-items="Model.EmploymentTypeOptions"
+                                            class="form-select" required>
+                                        <option value="">-- Select Type --</option>
+                                    </select>
+                                    <span asp-validation-for="Employee.EmploymentType" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="Employee.Status" class="form-label"></label>
+                                    <select asp-for="Employee.Status" asp-items="Model.StatusOptions"
+                                            class="form-select" required>
+                                        <option value="">-- Select Status --</option>
+                                    </select>
+                                    <span asp-validation-for="Employee.Status" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch mt-4 pt-2">
+                                        <input class="form-check-input" type="checkbox" asp-for="Employee.IsManager" />
+                                        <label class="form-check-label" asp-for="Employee.IsManager"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary me-md-2">
+                                <i class="bi bi-save"></i> Save Changes
+                            </button>
+                            <a asp-page="./ViewEmployee" asp-route-id="@Model.Employee.EmployeeID" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Enhanced client-side validation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize form validation
+            const forms = document.querySelectorAll('.needs-validation');
+
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        // Scroll to first invalid field
+                        const firstInvalid = form.querySelector(':invalid');
+                        if (firstInvalid) {
+                            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            firstInvalid.focus();
+                        }
+                    }
+
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            // Format phone number input
+            const phoneInput = document.getElementById('Employee_PhoneNumber');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            }
+
+            // Date of birth max validation
+            const dobInput = document.getElementById('Employee_DateOfBirth');
+            if (dobInput) {
+                dobInput.max = new Date().toISOString().split('T')[0];
+            }
+        });
+    </script>
 }

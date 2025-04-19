@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace HumanRepProj.Migrations
+namespace HumanRepProj.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -26,86 +26,72 @@ namespace HumanRepProj.Migrations
                 {
                     b.Property<int>("LoginID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("LoginID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LoginID"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("CreatedAt")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnName("CreatedAt");
 
                     b.Property<int>("EmployeeID")
-                        .HasColumnType("int")
-                        .HasColumnName("EmployeeID");
+                        .HasColumnType("int");
 
                     b.Property<int>("FailedAttempts")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("FailedAttempts");
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsLocked")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsLocked");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastLogin");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("Password");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("UpdatedAt")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnName("UpdatedAt");
 
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("Username");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("LoginID");
 
                     b.HasIndex("EmployeeID");
 
-                    b.ToTable("Logins", (string)null);
+                    b.ToTable("ApplicationUsers");
                 });
 
             modelBuilder.Entity("HumanRepProj.Models.Department", b =>
                 {
                     b.Property<int>("DepartmentID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("DepartmentID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentID"));
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasColumnName("Description");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Name");
+                        .HasColumnName("DepartmentName");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
 
                     b.HasKey("DepartmentID");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("HumanRepProj.Models.Employee", b =>
@@ -117,37 +103,61 @@ namespace HumanRepProj.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeID"));
 
-                    b.Property<DateTime>("DateHired")
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("DateHired");
+                        .HasColumnName("CreatedAt")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime>("DateHired")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<int>("DepartmentID")
-                        .HasColumnType("int")
-                        .HasColumnName("DepartmentID");
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("Email");
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("EmploymentType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("FirstName");
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<bool>("IsManager")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("LastName");
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("ManagerID")
+                        .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("PhoneNumber");
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Position")
                         .IsRequired()
@@ -156,31 +166,37 @@ namespace HumanRepProj.Migrations
                         .HasColumnName("Position");
 
                     b.Property<decimal>("Salary")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Salary");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Active")
-                        .HasColumnName("Status");
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.HasKey("EmployeeID");
 
                     b.HasIndex("DepartmentID");
 
-                    b.ToTable("Employees", (string)null);
+                    b.HasIndex("ManagerID");
+
+                    b.ToTable("Employees", "dbo");
                 });
 
             modelBuilder.Entity("HumanRepProj.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("HumanRepProj.Models.Employee", null)
+                    b.HasOne("HumanRepProj.Models.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("HumanRepProj.Models.Employee", b =>
@@ -188,15 +204,26 @@ namespace HumanRepProj.Migrations
                     b.HasOne("HumanRepProj.Models.Department", "Department")
                         .WithMany("Employees")
                         .HasForeignKey("DepartmentID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HumanRepProj.Models.Employee", "Manager")
+                        .WithMany("Subordinates")
+                        .HasForeignKey("ManagerID");
+
                     b.Navigation("Department");
+
+                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("HumanRepProj.Models.Department", b =>
                 {
                     b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("HumanRepProj.Models.Employee", b =>
+                {
+                    b.Navigation("Subordinates");
                 });
 #pragma warning restore 612, 618
         }
