@@ -12,7 +12,6 @@ namespace HumanRepProj.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -23,14 +22,7 @@ namespace HumanRepProj.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Call the configuration methods
-            ConfigureApplicationUser(modelBuilder);
-            ConfigureEmployee(modelBuilder);
-            ConfigureDepartment(modelBuilder);
-        }
-
-        private void ConfigureApplicationUser(ModelBuilder modelBuilder)
-        {
+            // Configure ApplicationUser (Logins table)
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.ToTable("Logins");
@@ -57,6 +49,22 @@ namespace HumanRepProj.Data
                     .HasColumnType("datetime2")
                     .HasColumnName("LastLogin");
 
+                entity.Property(u => u.FailedAttempts)
+                    .HasColumnName("FailedAttempts")
+                    .HasDefaultValue(0);
+
+                entity.Property(u => u.IsLocked)
+                    .HasColumnName("IsLocked")
+                    .HasDefaultValue(false);
+
+                entity.Property(u => u.CreatedAt)
+                    .HasColumnName("CreatedAt")
+                    .HasDefaultValueSql("GETDATE()");
+
+                entity.Property(u => u.UpdatedAt)
+                    .HasColumnName("UpdatedAt")
+                    .HasDefaultValueSql("GETDATE()");
+
                 entity.HasIndex(u => u.Username)
                     .IsUnique()
                     .HasDatabaseName("IX_Logins_Username");
@@ -66,10 +74,8 @@ namespace HumanRepProj.Data
                     .HasForeignKey(u => u.EmployeeID)
                     .OnDelete(DeleteBehavior.Cascade);
             });
-        }
 
-        private void ConfigureDepartment(ModelBuilder modelBuilder)
-        {
+            // Configure Department (Departments table)
             modelBuilder.Entity<Department>(entity =>
             {
                 entity.ToTable("Departments");
@@ -81,8 +87,25 @@ namespace HumanRepProj.Data
 
                 entity.Property(d => d.Name)
                     .IsRequired()
-                    .HasMaxLength(100)
-                    .HasColumnName("DepartmentName");
+                    .HasColumnName("DepartmentName")
+                    .HasMaxLength(100);
+
+                entity.Property(d => d.Description)
+                    .HasMaxLength(500);
+
+                entity.Property(d => d.Performance)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(d => d.DateCreated)
+                    .HasColumnType("datetime2")
+                    .HasDefaultValueSql("GETDATE()");
+
+                entity.Property(d => d.Budget)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(d => d.Status)
+                    .HasMaxLength(50)
+                    .HasDefaultValue("Active");
 
                 entity.HasIndex(d => d.Name)
                     .IsUnique()
@@ -93,10 +116,8 @@ namespace HumanRepProj.Data
                     .HasForeignKey(e => e.DepartmentID)
                     .OnDelete(DeleteBehavior.Restrict);
             });
-        }
 
-        private void ConfigureEmployee(ModelBuilder modelBuilder)
-        {
+            // Configure Employee (Employees table)
             modelBuilder.Entity<Employee>(entity =>
             {
                 entity.ToTable("Employees");
@@ -194,6 +215,11 @@ namespace HumanRepProj.Data
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
 
+                entity.HasOne(e => e.Department)
+                    .WithMany(d => d.Employees)
+                    .HasForeignKey(e => e.DepartmentID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
                 // Indexes
                 entity.HasIndex(e => e.Email)
                     .IsUnique()
@@ -222,7 +248,7 @@ namespace HumanRepProj.Data
             var entries = ChangeTracker
                 .Entries()
                 .Where(e => e.Entity is BaseEntity &&
-                           (e.State == EntityState.Added || e.State == EntityState.Modified));
+                          (e.State == EntityState.Added || e.State == EntityState.Modified));
 
             var currentTime = DateTime.UtcNow;
 

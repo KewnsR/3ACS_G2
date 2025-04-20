@@ -1,28 +1,32 @@
-﻿// Models/Department.cs
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HumanRepProj.Models
 {
-    public class Department : BaseEntity  // Inherits from BaseEntity for timestamps
+    public class Department
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DepartmentID { get; set; }
 
         [Required]
-        [StringLength(100)]  // Added length constraint
-        [Column("DepartmentName")]  // Matches database column name
-        [Display(Name = "Department Name")]  // For UI display
-        public string Name { get; set; } = string.Empty;
+        [StringLength(100, ErrorMessage = "Department name cannot exceed 100 characters.")]
+        public string Name { get; set; }
 
-        // Navigation property
-        public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
+        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
+        public string Description { get; set; }
 
-        // Timestamp properties inherited from BaseEntity:
-        // public DateTime CreatedAt { get; set; }
-        // public DateTime UpdatedAt { get; set; }
+        [Range(0, 100, ErrorMessage = "Performance must be between 0 and 100.")]
+        public decimal Performance { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime DateCreated { get; set; } = DateTime.Now;
+
+        [Range(0, double.MaxValue, ErrorMessage = "Budget must be a positive value.")]
+        public decimal Budget { get; set; }
+
+        [Required]
+        public string Status { get; set; } = "Active";
+
+        // Navigation property to represent the relationship with Employee
+        public virtual ICollection<Employee> Employees { get; set; }
     }
 }
