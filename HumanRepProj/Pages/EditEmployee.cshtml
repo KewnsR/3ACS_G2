@@ -5,6 +5,21 @@
     Layout = "_Layout";
 }
 
+<style>
+    .required-field::after {
+        content: " *";
+        color: red;
+    }
+
+    .is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+</style>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
@@ -91,10 +106,20 @@
                             <h5 class="border-bottom pb-2 mb-3">Employment Information</h5>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label asp-for="Employee.DepartmentID" class="form-label"></label>
-                                    <select asp-for="Employee.DepartmentID" asp-items="Model.Departments" class="form-select" required>
-                                        <option value="">-- Select Department --</option>
-                                    </select>
+                                    <label asp-for="Employee.DepartmentID" class="form-label required-field">Department</label>
+                                    @if (Model.Departments.Any())
+                                    {
+                                        <select asp-for="Employee.DepartmentID" asp-items="Model.Departments" class="form-select" required>
+                                            <option value="">-- Select Department --</option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <select class="form-select is-invalid" disabled>
+                                            <option>No departments available</option>
+                                        </select>
+                                        <small class="text-danger">Please create departments first</small>
+                                    }
                                     <span asp-validation-for="Employee.DepartmentID" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6">
@@ -102,7 +127,7 @@
                                     <input asp-for="Employee.Position" class="form-control" required
                                            placeholder="e.g. CSR" />
                                     <span asp-validation-for="Employee.Position" class="text-danger"></span>
-                                </div>
+                                </div>  
                                 <div class="col-md-4">
                                     <label asp-for="Employee.Salary" class="form-label"></label>
                                     <div class="input-group">
@@ -115,7 +140,7 @@
                                 <div class="col-md-4">
                                     <label asp-for="Employee.ManagerID" class="form-label"></label>
                                     <select asp-for="Employee.ManagerID" asp-items="Model.Managers" class="form-select">
-                                        <option value="">-- Select Manager --</option>
+                                        <option value="">-- No Manager (Optional) --</option>
                                     </select>
                                     <span asp-validation-for="Employee.ManagerID" class="text-danger"></span>
                                 </div>
@@ -160,9 +185,12 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <!-- Load jQuery first -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Then load validation scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
 
     <script>
         // Enhanced client-side validation
@@ -201,6 +229,26 @@
             if (dobInput) {
                 dobInput.max = new Date().toISOString().split('T')[0];
             }
+        });
+
+         $(document).ready(function() {
+            // Highlight department field if invalid
+            $('form').submit(function() {
+                const deptSelect = $('#Employee_DepartmentID');
+                if (!deptSelect.val()) {
+                    deptSelect.addClass('is-invalid');
+                    deptSelect.focus();
+                    return false;
+                }
+                return true;
+            });
+
+            // Clear invalid state when user selects something
+            $('#Employee_DepartmentID').change(function() {
+                if ($(this).val()) {
+                    $(this).removeClass('is-invalid');
+                }
+            });
         });
     </script>
 }
