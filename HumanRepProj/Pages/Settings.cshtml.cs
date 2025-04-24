@@ -71,6 +71,7 @@ namespace HumanRepProj.Pages
         [BindProperty]
         public string DashboardCustomization { get; set; }
 
+
         public void OnGet()
         {
         }
@@ -91,7 +92,7 @@ namespace HumanRepProj.Pages
         public async Task<IActionResult> OnPostLogoutAsync()
         {
             HttpContext.Session.Clear(); // Clear session
-            await HttpContext.SignOutAsync(); // Sign out if using authentication
+            await HttpContext.SignOutAsync(); // Sign out if using authenti cation
             return RedirectToPage("/Login"); // Redirect to login page
 
             
