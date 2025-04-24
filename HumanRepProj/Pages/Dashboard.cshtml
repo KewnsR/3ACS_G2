@@ -8,13 +8,17 @@
 @section Styles {
     <style>
         .scrollable-container {
-            max-height: calc(100vh - 56px); /* Subtract header height */
-            overflow-y: auto; /* Enable vertical scrolling */
-            overflow-x: hidden; /* Disable horizontal scrolling */
-            padding-right: 1.5rem; /* Adjust padding to move the scrollbar more to the right */
-            margin-right: -1rem; /* Ensure the scrollbar aligns with the edge */
+            position: absolute; /* Position it properly */
+            left: 256px; /* Match sidebar width exactly */
+            top: 0;
+            width: calc(100% - 256px); /* Take remaining width */
+            height: 100vh; /* Full viewport height */
+            overflow-y: auto; /* Single scrollbar */
+            padding: 20px; /* Content padding */
+            box-sizing: border-box;
         }
 
+            /* Scrollbar styling */
             .scrollable-container::-webkit-scrollbar {
                 width: 8px;
             }

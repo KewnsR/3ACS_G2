@@ -7,12 +7,26 @@
 
 @section Styles {
     <style>
-        .scrollable-container {
-            max-height: calc(100vh - 56px); /* Subtract header height */
-            overflow-y: auto;
-            padding-right: 1rem; /* Optional: Add padding for better UX */
+        /* Remove extra scrollbar and fix layout */
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent body scrollbar */
         }
 
+        /* Keep the original scrollable container but adjust its position */
+        .scrollable-container {
+            position: absolute; /* Position it properly */
+            left: 256px; /* Match sidebar width exactly */
+            top: 0;
+            width: calc(100% - 256px); /* Take remaining width */
+            height: 100vh; /* Full viewport height */
+            overflow-y: auto; /* Single scrollbar */
+            padding: 20px; /* Content padding */
+            box-sizing: border-box;
+        }
+
+            /* Scrollbar styling */
             .scrollable-container::-webkit-scrollbar {
                 width: 8px;
             }
@@ -26,6 +40,7 @@
                 background-color: #f8f9fa;
             }
 
+        /* Original styles from the provided code */
         .dashboard-card {
             border: none;
             border-radius: 10px;
@@ -45,12 +60,6 @@
             padding: 1rem;
         }
 
-        .main-content {
-            overflow-y: auto;
-            height: calc(100vh - 56px);
-            padding: 20px;
-        }
-
         .table-responsive {
             border-radius: 10px;
             overflow: hidden;
@@ -65,12 +74,10 @@
             font-size: 0.9rem;
             padding: 0.4em 0.6em;
         }
-
     </style>
 }
 
 <div class="scrollable-container">
-<div class="main-content">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2 mb-0">Attendance Dashboard</h1>
@@ -202,7 +209,6 @@
         </div>
     </div>
 </div>
-</div>
 
 @section Scripts {
     <script>
@@ -212,23 +218,15 @@
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
 
-        // In a real application, you would initialize charts here
+        // Simple script to handle any header height adjustments
         document.addEventListener('DOMContentLoaded', function() {
-            // This ensures the content area fills the available space
-            const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content');
+            const headerHeight = document.querySelector('header')?.offsetHeight || 0;
+            const scrollableContainer = document.querySelector('.scrollable-container');
 
-            if (sidebar && mainContent) {
-                const headerHeight = document.querySelector('header')?.offsetHeight || 56;
-                const availableHeight = window.innerHeight - headerHeight;
-                mainContent.style.height = `${availableHeight}px`;
+            if (scrollableContainer && headerHeight > 0) {
+                scrollableContainer.style.top = `${headerHeight}px`;
+                scrollableContainer.style.height = `calc(100vh - ${headerHeight}px)`;
             }
-        });
-
-        window.addEventListener('resize', function() {
-            const headerHeight = document.querySelector('header')?.offsetHeight || 56;
-            const availableHeight = window.innerHeight - headerHeight;
-            document.querySelector('.main-content').style.height = `${availableHeight}px`;
         });
     </script>
 }

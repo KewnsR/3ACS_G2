@@ -7,6 +7,30 @@
 
 @section Styles {
     <style>
+        .scrollable-container {
+            position: absolute; /* Position it properly */
+            left: 256px; /* Match sidebar width exactly */
+            top: 0;
+            width: calc(100% - 256px); /* Take remaining width */
+            height: 100vh; /* Full viewport height */
+            overflow-y: auto; /* Single scrollbar */
+            padding: 20px; /* Content padding */
+            box-sizing: border-box;
+        }
+
+            /* Scrollbar styling */
+            .scrollable-container::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .scrollable-container::-webkit-scrollbar-thumb {
+                background-color: #0d6efd;
+                border-radius: 4px;
+            }
+
+            .scrollable-container::-webkit-scrollbar-track {
+                background-color: #f8f9fa;
+            }
         .leave-form-card {
             max-width: 800px;
             margin: 0 auto;
@@ -30,6 +54,7 @@
     </style>
 }
 
+<div class="scrollable-container">
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Leave Request</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
@@ -173,6 +198,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 
 @section Scripts {
