@@ -1,5 +1,6 @@
 ﻿using HumanRepProj.Data;
 using HumanRepProj.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -91,6 +92,16 @@ namespace HumanRepProj.Pages
 
             StatusMessage = $"Employee {employee.FullName} status updated to {employee.Status}";
             return RedirectToPage(new { CurrentPage, SearchTerm });
+        }
+
+        // Handles logout from the form
+        public async Task<IActionResult> OnPostLogoutAsync()
+        {
+            // Clear session and sign out
+            HttpContext.Session.Clear();
+            await HttpContext.SignOutAsync();
+
+            return RedirectToPage("/Login");
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)

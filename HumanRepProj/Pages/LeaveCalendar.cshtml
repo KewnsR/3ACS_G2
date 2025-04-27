@@ -1,0 +1,86 @@
+﻿@page
+@model LeaveCalendarModel
+@{
+    ViewData["Title"] = "Leave Calendar";
+    Layout = "_Layout";
+}
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <style>
+        #calendar {
+            height: calc(100vh - 180px);
+            width: 100%;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .fc-event {
+            cursor: pointer;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .back-button {
+            padding: 5px 15px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            .back-button:hover {
+                background-color: #5a6268;
+            }
+    </style>
+}
+<div class="container-fluid">
+    <div class="calendar-header">
+        <h1 class="mb-0">Leave Calendar</h1>
+        <a href="/Leave" class="back-button">Back to Leave</a>
+    </div>
+    <div id="calendar"></div>
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+
+            // Debug: Check that data is available
+            const eventsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.LeaveEvents));
+            console.log("Calendar events:", eventsData);
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: eventsData,
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: 'short'
+                },
+                eventDidMount: function(info) {
+                    // Add tooltip
+                    info.el.title = info.event.title;
+                },
+                // Make the calendar take full height
+                height: '100%',
+                contentHeight: 'auto'
+            });
+
+            calendar.render();
+        });
+    </script>
+}

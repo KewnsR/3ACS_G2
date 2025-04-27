@@ -55,151 +55,193 @@
 }
 
 <div class="scrollable-container">
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Leave Request</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="/LeaveRequests" class="btn btn-outline-secondary me-2">
-            <i class="bi bi-list-ul me-1"></i> View All Requests
-        </a>
-        <button type="button" class="btn btn-outline-primary">
-            <i class="bi bi-calendar3 me-1"></i> Leave Calendar
-        </button>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Leave Request</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="/LeaveCalendar" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-list-ul me-1"></i> View Calendar
+            </a>
+        </div>
     </div>
-</div>
 
-@if (!string.IsNullOrEmpty(Model.Message))
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @Model.Message
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Model.Message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Leave Calendar Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">All Leave Request</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Leave Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Reason</th>
+                        <th>Attachment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var leave in LeaveModel.LeaveRequests)
+                    {
+                        <tr>
+                            <td>@leave.EmployeeName</td>
+                            <td>@leave.LeaveType</td>
+                            <td>@leave.StartDate.ToShortDateString()</td>
+                            <td>@leave.EndDate.ToShortDateString()</td>
+                            <td>@leave.Reason</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(leave.AttachmentPath))
+                                {
+                                    <a href="@Url.Content(leave.AttachmentPath)" target="_blank" class="btn btn-link">
+                                        View Attachment
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>No Attachment</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-}
 
-<div class="card leave-form-card mb-4">
-    <div class="card-header bg-white">
-        <h5 class="mb-0">New Leave Request</h5>
+    <!-- New Leave Request Form -->
+    <div class="card leave-form-card mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">New Leave Request</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Input.EmployeeName" class="form-label">Employee Name</label>
+                        <input asp-for="Input.EmployeeName" class="form-control" />
+                        <span asp-validation-for="Input.EmployeeName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Input.LeaveType" class="form-label">Leave Type</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="Input.LeaveType" id="vacation" value="Vacation" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="vacation">
+                                <i class="bi bi-umbrella me-1"></i> Vacation
+                            </label>
+
+                            <input type="radio" class="btn-check" name="Input.LeaveType" id="sick" value="Sick" autocomplete="off">
+                            <label class="btn btn-outline-danger" for="sick">
+                                <i class="bi bi-heart-pulse me-1"></i> Sick
+                            </label>
+
+                            <input type="radio" class="btn-check" name="Input.LeaveType" id="personal" value="Personal" autocomplete="off">
+                            <label class="btn btn-outline-info" for="personal">
+                                <i class="bi bi-person me-1"></i> Personal
+                            </label>
+                        </div>
+                        <span asp-validation-for="Input.LeaveType" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 position-relative">
+                        <label asp-for="Input.StartDate" class="form-label">Start Date</label>
+                        <input asp-for="Input.StartDate" class="form-control" type="date" />
+                        <span asp-validation-for="Input.StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 position-relative">
+                        <label asp-for="Input.EndDate" class="form-label">End Date</label>
+                        <input asp-for="Input.EndDate" class="form-control" type="date" />
+                        <span asp-validation-for="Input.EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Reason" class="form-label">Reason for Leave</label>
+                    <textarea asp-for="Input.Reason" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Input.Reason" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Attachment (if any)</label>
+                    <input type="file" class="form-control">
+                    <small class="text-muted">Upload supporting documents (medical certificate, etc.)</small>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send-check me-1"></i> Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="card-body">
-        <form method="post">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label asp-for="Input.EmployeeName" class="form-label">Employee Name</label>
-                    <input asp-for="Input.EmployeeName" class="form-control" />
-                    <span asp-validation-for="Input.EmployeeName" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Leave Type</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check" name="leaveType" id="vacation" autocomplete="off" checked>
-                        <label class="btn btn-outline-primary" for="vacation">
-                            <i class="bi bi-umbrella me-1"></i> Vacation
-                        </label>
 
-                        <input type="radio" class="btn-check" name="leaveType" id="sick" autocomplete="off">
-                        <label class="btn btn-outline-danger" for="sick">
-                            <i class="bi bi-heart-pulse me-1"></i> Sick
-                        </label>
-
-                        <input type="radio" class="btn-check" name="leaveType" id="personal" autocomplete="off">
-                        <label class="btn btn-outline-info" for="personal">
-                            <i class="bi bi-person me-1"></i> Personal
-                        </label>
+    <!-- Leave Balance Summary -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Your Leave Balance</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
+                            <i class="bi bi-umbrella text-primary fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Vacation</h6>
+                            <p class="mb-0">15 days remaining</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6 position-relative">
-                    <label asp-for="Input.StartDate" class="form-label">Start Date</label>
-                    <input asp-for="Input.StartDate" class="form-control" type="date" />
-                    <span asp-validation-for="Input.StartDate" class="text-danger"></span>
-                </div>
-                <div class="col-md-6 position-relative">
-                    <label asp-for="Input.EndDate" class="form-label">End Date</label>
-                    <input asp-for="Input.EndDate" class="form-control" type="date" />
-                    <span asp-validation-for="Input.EndDate" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Input.Reason" class="form-label">Reason for Leave</label>
-                <textarea asp-for="Input.Reason" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Input.Reason" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Attachment (if any)</label>
-                <input type="file" class="form-control">
-                <small class="text-muted">Upload supporting documents (medical certificate, etc.)</small>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <button type="button" class="btn btn-outline-secondary">
-                    <i class="bi bi-x-circle me-1"></i> Cancel
-                </button>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-send-check me-1"></i> Submit Request
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Leave Balance Summary -->
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-white">
-        <h5 class="mb-0">Your Leave Balance</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
-                        <i class="bi bi-umbrella text-primary fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0">Vacation</h6>
-                        <p class="mb-0">15 days remaining</p>
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-danger bg-opacity-10 p-3 rounded me-3">
+                            <i class="bi bi-heart-pulse text-danger fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Sick Leave</h6>
+                            <p class="mb-0">10 days remaining</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-danger bg-opacity-10 p-3 rounded me-3">
-                        <i class="bi bi-heart-pulse text-danger fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0">Sick Leave</h6>
-                        <p class="mb-0">10 days remaining</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-info bg-opacity-10 p-3 rounded me-3">
-                        <i class="bi bi-person text-info fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0">Personal</h6>
-                        <p class="mb-0">5 days remaining</p>
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-info bg-opacity-10 p-3 rounded me-3">
+                            <i class="bi bi-person text-info fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Personal</h6>
+                            <p class="mb-0">5 days remaining</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-warning bg-opacity-10 p-3 rounded me-3">
-                        <i class="bi bi-calendar2-event text-warning fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0">Total Taken</h6>
-                        <p class="mb-0">7 days this year</p>
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded me-3">
+                            <i class="bi bi-calendar2-event text-warning fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Total Taken</h6>
+                            <p class="mb-0">7 days this year</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
+
 
 @section Scripts {
     <script>
