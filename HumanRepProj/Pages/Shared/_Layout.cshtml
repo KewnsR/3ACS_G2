@@ -201,6 +201,9 @@
                 <a href="/Leave" class="menu-item" id="leave-btn">
                     <i class="fas fa-calendar-alt"></i> Leave
                 </a>
+                <a href="/Loans" class="menu-item" id="loans-btn">
+                    <i class="fas fa-hand-holding-usd"></i> Loans
+                </a>
                 <a href="/Settings" class="menu-item" id="settings-btn">
                     <i class="fas fa-cogs"></i> Settings
                 </a>
@@ -272,6 +275,8 @@
                 activeItem = document.getElementById('attendance-btn');
             } else if (currentPath.includes('/leave')) {
                 activeItem = document.getElementById('leave-btn');
+            } else if (currentPath.includes('/loans')) {
+                activeItem = document.getElementById('loans-btn');
             } else if (currentPath.includes('/reports')) {
                 activeItem = document.getElementById('reports-btn');
             } else if (currentPath.includes('/payroll')) {
