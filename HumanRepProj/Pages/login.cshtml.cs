@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using HumanRepProj.Data;
 using System.Linq;
 
+
 namespace HumanRepProj.Pages
 {
     public class LoginModel : PageModel

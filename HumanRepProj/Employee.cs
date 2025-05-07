@@ -1,5 +1,4 @@
-﻿// Models/Employee.cs
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -28,10 +27,10 @@ namespace HumanRepProj.Models
 
         [Phone(ErrorMessage = "Invalid phone number format")]
         [StringLength(20)]
-        public string? PhoneNumber { get; set; }  // Made explicitly nullable
+        public string? PhoneNumber { get; set; }
 
         [StringLength(500)]
-        public string? Address { get; set; }     // Made explicitly nullable
+        public string? Address { get; set; }
 
         [Required(ErrorMessage = "Date of birth is required")]
         [DataType(DataType.Date)]
@@ -45,7 +44,8 @@ namespace HumanRepProj.Models
         public int DepartmentID { get; set; }
 
         [ForeignKey("DepartmentID")]
-        public Department? Department { get; set; }
+        [ValidateNever]
+        public virtual Department? Department { get; set; }
 
         [Required(ErrorMessage = "Position is required")]
         [StringLength(100)]
@@ -67,20 +67,28 @@ namespace HumanRepProj.Models
         [StringLength(50)]
         public string Status { get; set; } = "Active";
 
-        public int? ManagerID { get; set; } // This is correct - keep as nullable
+        // Manager relationship (nullable)
+        public int? ManagerID { get; set; }
 
         [ForeignKey("ManagerID")]
-        [ValidateNever] // Add this attribute
-        public Employee? Manager { get; set; }
+        [ValidateNever]
+        public virtual Employee? Manager { get; set; }
 
+        // Indicates if this employee is a manager of any department
         public bool IsManager { get; set; }
 
+        // Navigation property for employees managed by this employee
+        [InverseProperty("Manager")]
+        [ValidateNever]
+        public virtual ICollection<Employee> Subordinates { get; set; } = new List<Employee>();
+
+        // Not mapped properties
         [NotMapped]
-        [ValidateNever]  // Add this attribute
+        [ValidateNever]
         public string FullName => $"{FirstName} {LastName}";
 
         [NotMapped]
-        [ValidateNever]  // Add this attribute
-        public ICollection<Employee> Subordinates { get; set; } = new List<Employee>();
+        [ValidateNever]
+        public string DepartmentName => Department?.Name ?? "Unassigned";
     }
 }

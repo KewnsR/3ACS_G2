@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HumanRepProj.Pages
 {
@@ -23,9 +24,17 @@ namespace HumanRepProj.Pages
         }
 
         public List<DepartmentViewModel> Departments { get; set; } = new List<DepartmentViewModel>();
+        public List<Employee> DepartmentEmployees { get; set; } = new List<Employee>();
+        public List<Employee> PotentialManagers { get; set; } = new List<Employee>();
 
         [BindProperty]
         public DepartmentInputModel Input { get; set; }
+
+        [BindProperty]
+        public int? SelectedDepartmentId { get; set; }
+
+        [BindProperty]
+        public int? SelectedManagerId { get; set; }
 
         public class DepartmentViewModel
         {
@@ -40,6 +49,8 @@ namespace HumanRepProj.Pages
             public string FormattedBudget => Budget.ToString("C");
             public string Status { get; set; }
             public string StatusClass => Status == "Active" ? "bg-success" : "bg-secondary";
+            public int? ManagerID { get; set; }
+            public string ManagerName { get; set; }
         }
 
         public class DepartmentInputModel
@@ -47,10 +58,10 @@ namespace HumanRepProj.Pages
             public int? DepartmentID { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "Department name cannot exceed 100 characters.")]
+            [StringLength(50, ErrorMessage = "Department name cannot exceed 50 characters.")]
             public string Name { get; set; }
 
-            [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
+            [StringLength(100, ErrorMessage = "Description cannot exceed 100 characters.")]
             public string Description { get; set; }
 
             [Range(0, 100, ErrorMessage = "Performance must be between 0 and 100.")]
@@ -64,9 +75,11 @@ namespace HumanRepProj.Pages
 
             [Required]
             public string Status { get; set; } = "Active";
+
+            public int? ManagerID { get; set; }
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int? departmentId = null)
         {
             var userEmail = HttpContext.Session.GetString("Username");
 
@@ -77,7 +90,16 @@ namespace HumanRepProj.Pages
             }
 
             _logger.LogInformation($"User {userEmail} accessed the Departments page.");
+
             await LoadDepartments();
+
+            if (departmentId.HasValue)
+            {
+                SelectedDepartmentId = departmentId;
+                await LoadDepartmentEmployees(departmentId.Value);
+                await LoadPotentialManagers(departmentId.Value);
+            }
+
             return Page();
         }
 
@@ -93,8 +115,34 @@ namespace HumanRepProj.Pages
                     Performance = d.Performance,
                     DateCreated = d.DateCreated,
                     Budget = d.Budget,
-                    Status = d.Status
+                    Status = d.Status,
+                    ManagerID = d.ManagerID,
+                    ManagerName = d.ManagerID.HasValue ?
+                        _context.Employees
+                            .Where(e => e.EmployeeID == d.ManagerID)
+                            .Select(e => $"{e.FirstName} {e.LastName}")
+                            .FirstOrDefault() : null
                 })
+                .ToListAsync();
+        }
+
+        private async Task LoadDepartmentEmployees(int departmentId)
+        {
+            DepartmentEmployees = await _context.Employees
+                .Where(e => e.DepartmentID == departmentId)
+                .OrderBy(e => e.LastName)
+                .ThenBy(e => e.FirstName)
+                .ToListAsync();
+        }
+
+        private async Task LoadPotentialManagers(int departmentId)
+        {
+            // Get current department's employees who aren't already managers elsewhere
+            PotentialManagers = await _context.Employees
+                .Where(e => e.DepartmentID == departmentId &&
+                           !_context.Departments.Any(d => d.ManagerID == e.EmployeeID))
+                .OrderBy(e => e.LastName)
+                .ThenBy(e => e.FirstName)
                 .ToListAsync();
         }
 
@@ -113,11 +161,18 @@ namespace HumanRepProj.Pages
                 Performance = Input.Performance,
                 DateCreated = Input.DateCreated,
                 Budget = Input.Budget,
-                Status = Input.Status
+                Status = Input.Status,
+                ManagerID = Input.ManagerID
             };
 
             _context.Departments.Add(department);
             await _context.SaveChangesAsync();
+
+            // If a manager was assigned, update their status
+            if (Input.ManagerID.HasValue)
+            {
+                await UpdateEmployeeManagerStatus(Input.ManagerID.Value, true);
+            }
 
             return RedirectToPage();
         }
@@ -146,15 +201,30 @@ namespace HumanRepProj.Pages
                 return Page();
             }
 
+            // Get previous manager before updating
+            var previousManagerId = department.ManagerID;
+
             department.Name = Input.Name;
             department.Description = Input.Description;
             department.Performance = Input.Performance;
             department.DateCreated = Input.DateCreated;
             department.Budget = Input.Budget;
             department.Status = Input.Status;
+            department.ManagerID = Input.ManagerID;
 
             _context.Departments.Update(department);
             await _context.SaveChangesAsync();
+
+            // Update manager statuses
+            if (previousManagerId.HasValue && previousManagerId != Input.ManagerID)
+            {
+                await UpdateEmployeeManagerStatus(previousManagerId.Value, false);
+            }
+
+            if (Input.ManagerID.HasValue)
+            {
+                await UpdateEmployeeManagerStatus(Input.ManagerID.Value, true);
+            }
 
             return RedirectToPage();
         }
@@ -174,11 +244,85 @@ namespace HumanRepProj.Pages
                     return RedirectToPage();
                 }
 
+                // If this department had a manager, update their status
+                if (department.ManagerID.HasValue)
+                {
+                    await UpdateEmployeeManagerStatus(department.ManagerID.Value, false);
+                }
+
                 _context.Departments.Remove(department);
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostAssignManagerAsync()
+        {
+            if (!SelectedDepartmentId.HasValue || !SelectedManagerId.HasValue)
+            {
+                TempData["ErrorMessage"] = "Both department and manager must be selected.";
+                return RedirectToPage();
+            }
+
+            var department = await _context.Departments.FindAsync(SelectedDepartmentId.Value);
+            if (department == null)
+            {
+                TempData["ErrorMessage"] = "Department not found.";
+                return RedirectToPage();
+            }
+
+            var employee = await _context.Employees.FindAsync(SelectedManagerId.Value);
+            if (employee == null)
+            {
+                TempData["ErrorMessage"] = "Employee not found.";
+                return RedirectToPage();
+            }
+
+            // Check if the employee belongs to this department
+            if (employee.DepartmentID != SelectedDepartmentId.Value)
+            {
+                TempData["ErrorMessage"] = "Selected employee doesn't belong to this department.";
+                return RedirectToPage(new { departmentId = SelectedDepartmentId.Value });
+            }
+
+            // Get previous manager before updating
+            var previousManagerId = department.ManagerID;
+
+            // Update department with new manager
+            department.ManagerID = SelectedManagerId.Value;
+            _context.Departments.Update(department);
+
+            // Update employee's manager status
+            employee.IsManager = true;
+            _context.Employees.Update(employee);
+
+            // If there was a previous manager, update their status
+            if (previousManagerId.HasValue && previousManagerId != SelectedManagerId.Value)
+            {
+                var previousManager = await _context.Employees.FindAsync(previousManagerId.Value);
+                if (previousManager != null)
+                {
+                    previousManager.IsManager = false;
+                    _context.Employees.Update(previousManager);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Manager assigned successfully!";
+            return RedirectToPage(new { departmentId = SelectedDepartmentId.Value });
+        }
+
+        private async Task UpdateEmployeeManagerStatus(int employeeId, bool isManager)
+        {
+            var employee = await _context.Employees.FindAsync(employeeId);
+            if (employee != null)
+            {
+                employee.IsManager = isManager;
+                _context.Employees.Update(employee);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<JsonResult> OnGetDepartmentDetailsAsync(int id)
@@ -201,9 +345,42 @@ namespace HumanRepProj.Pages
                     department.Performance,
                     department.DateCreated,
                     department.Budget,
-                    department.Status
+                    department.Status,
+                    department.ManagerID
                 }
             });
+        }
+
+        public async Task<JsonResult> OnGetDepartmentEmployeesAsync(int departmentId)
+        {
+            var employees = await _context.Employees
+                .Where(e => e.DepartmentID == departmentId)
+                .Select(e => new
+                {
+                    e.EmployeeID,
+                    e.FirstName,
+                    e.LastName,
+                    e.Position,
+                    e.IsManager
+                })
+                .ToListAsync();
+
+            return new JsonResult(new { success = true, employees });
+        }
+
+        public async Task<JsonResult> OnGetPotentialManagersAsync(int departmentId)
+        {
+            var managers = await _context.Employees
+                .Where(e => e.DepartmentID == departmentId && !e.IsManager)
+                .Select(e => new
+                {
+                    e.EmployeeID,
+                    FullName = $"{e.FirstName} {e.LastName}",
+                    e.Position
+                })
+                .ToListAsync();
+
+            return new JsonResult(new { success = true, managers });
         }
 
         public IActionResult OnPostLogout()
