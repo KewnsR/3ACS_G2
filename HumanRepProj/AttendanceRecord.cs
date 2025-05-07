@@ -17,19 +17,19 @@ namespace HumanRepProj.Models
         public DateTime AttendanceDate { get; set; }
 
         [DataType(DataType.Time)]
-        public DateTime? TimeIn { get; set; }
+        public TimeSpan? TimeIn { get; set; }
 
         [DataType(DataType.Time)]
-        public DateTime? TimeOut { get; set; }
+        public TimeSpan? TimeOut { get; set; }
 
         [StringLength(20)]
         public string Status { get; set; } // Present, Absent, Late, etc.
 
         [DataType(DataType.Time)]
-        public DateTime? LunchStartTime { get; set; }
+        public TimeSpan? LunchStartTime { get; set; }
 
         [DataType(DataType.Time)]
-        public DateTime? LunchEndTime { get; set; }
+        public TimeSpan? LunchEndTime { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

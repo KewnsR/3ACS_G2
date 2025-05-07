@@ -1,8 +1,9 @@
 ﻿@page
-@model AttendanceModel
+@model HumanRepProj.Pages.AttendanceModel
 @{
     ViewData["Title"] = "Attendance";
     Layout = "_Layout";
+
 }
 
 @section Styles {
@@ -11,36 +12,20 @@
         body, html {
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevent body scrollbar */
+            overflow: hidden;
         }
 
-        /* Keep the original scrollable container but adjust its position */
         .scrollable-container {
-            position: absolute; /* Position it properly */
-            left: 256px; /* Match sidebar width exactly */
+            position: absolute;
+            left: 256px;
             top: 0;
-            width: calc(100% - 256px); /* Take remaining width */
-            height: 100vh; /* Full viewport height */
-            overflow-y: auto; /* Single scrollbar */
-            padding: 20px; /* Content padding */
+            width: calc(100% - 256px);
+            height: 100vh;
+            overflow-y: auto;
+            padding: 20px;
             box-sizing: border-box;
         }
 
-            /* Scrollbar styling */
-            .scrollable-container::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            .scrollable-container::-webkit-scrollbar-thumb {
-                background-color: #0d6efd;
-                border-radius: 4px;
-            }
-
-            .scrollable-container::-webkit-scrollbar-track {
-                background-color: #f8f9fa;
-            }
-
-        /* Original styles from the provided code */
         .dashboard-card {
             border: none;
             border-radius: 10px;
@@ -48,10 +33,6 @@
             transition: transform 0.3s;
             height: 100%;
         }
-
-            .dashboard-card:hover {
-                transform: translateY(-5px);
-            }
 
         .chart-container {
             height: 300px;
@@ -94,7 +75,7 @@
             <div class="card dashboard-card text-white bg-success">
                 <div class="card-body">
                     <h6 class="card-title">PRESENT</h6>
-                    <p class="card-text display-6">220</p>
+                    <p class="card-text display-6">@Model.PresentCount</p>
                     <p class="card-text"><small>+5 from yesterday</small></p>
                 </div>
             </div>
@@ -103,7 +84,7 @@
             <div class="card dashboard-card text-white bg-danger">
                 <div class="card-body">
                     <h6 class="card-title">ABSENT</h6>
-                    <p class="card-text display-6">25</p>
+                    <p class="card-text display-6">@Model.AbsentCount</p>
                     <p class="card-text"><small>-2 from yesterday</small></p>
                 </div>
             </div>
@@ -112,7 +93,7 @@
             <div class="card dashboard-card text-white bg-warning">
                 <div class="card-body">
                     <h6 class="card-title">LATE</h6>
-                    <p class="card-text display-6">15</p>
+                    <p class="card-text display-6">@Model.LateCount</p>
                     <p class="card-text"><small>+3 from yesterday</small></p>
                 </div>
             </div>
@@ -121,7 +102,7 @@
             <div class="card dashboard-card text-white bg-info">
                 <div class="card-body">
                     <h6 class="card-title">ATTENDANCE RATE</h6>
-                    <p class="card-text display-6">96.5%</p>
+                    <p class="card-text display-6">@Model.AttendanceRate%</p>
                     <p class="card-text"><small>+2.1% from last month</small></p>
                 </div>
             </div>
@@ -137,7 +118,6 @@
                 </div>
                 <div class="card-body">
                     <div class="chart-container">
-                        <!-- Chart placeholder -->
                         <div class="d-flex align-items-center justify-content-center h-100">
                             <div class="text-center">
                                 <i class="bi bi-graph-up-arrow fs-1 text-muted"></i>
@@ -155,7 +135,6 @@
                 </div>
                 <div class="card-body">
                     <div class="chart-container">
-                        <!-- Chart placeholder -->
                         <div class="d-flex align-items-center justify-content-center h-100">
                             <div class="text-center">
                                 <i class="bi bi-pie-chart fs-1 text-muted"></i>
@@ -185,24 +164,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>John Doe</td>
-                            <td>April 14, 2025</td>
-                            <td><span class="badge bg-success badge-status">Present</span></td>
-                            <td>On time</td>
-                        </tr>
-                        <tr>
-                            <td>Jane Smith</td>
-                            <td>April 14, 2025</td>
-                            <td><span class="badge bg-warning badge-status">Late</span></td>
-                            <td>10 minutes late</td>
-                        </tr>
-                        <tr>
-                            <td>Michael Brown</td>
-                            <td>April 14, 2025</td>
-                            <td><span class="badge bg-danger badge-status">Absent</span></td>
-                            <td>No notification</td>
-                        </tr>
+                        @foreach (var record in Model.AttendanceRecords)
+                        {
+                            <tr>
+                                <td>@record.Employee.FullName</td>
+                                <td>@record.AttendanceDate.ToString("MMMM dd, yyyy")</td>
+                                <td>
+                                    <span class="badge badge-status
+                                        @(record.Status == "Present" ? "bg-success" :
+                                          record.Status == "Late" ? "bg-warning" :
+                                          record.Status == "Absent" ? "bg-danger" : "bg-secondary")">
+                                        @record.Status
+                                    </span>
+                                </td>
+                                <td>On time</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -218,8 +195,8 @@
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
 
-        // Simple script to handle any header height adjustments
-        document.addEventListener('DOMContentLoaded', function() {
+        // Adjust scrollable container height based on header
+        document.addEventListener('DOMContentLoaded', function () {
             const headerHeight = document.querySelector('header')?.offsetHeight || 0;
             const scrollableContainer = document.querySelector('.scrollable-container');
 
