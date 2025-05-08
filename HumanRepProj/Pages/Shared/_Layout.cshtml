@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentPath = Context.Request.Path.Value.ToLower();
+    var hideSidebar = currentPath.Contains("/user");
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -175,6 +179,8 @@
     </style>
 </head>
 <body>
+    @if (!hideSidebar)
+    {
     <!-- Fixed Sidebar -->
     <aside class="sidebar">
         <div class="px-3 py-4 d-flex flex-column h-100">
@@ -216,7 +222,7 @@
             </button>
         </div>
     </aside>
-
+    }
 
     <!-- Main Content -->
     <main class="main-content">
