@@ -7,14 +7,12 @@
 
 @section Styles {
     <style>
-
         /* Fixed sticky header and layout issues */
         .app-container {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             background-color: #f8f9fa;
-            
         }
 
         .scrollable-container {
@@ -45,6 +43,7 @@
             display: flex;
             align-items: center;
         }
+
         /* Dashboard cards with responsive enhancements */
         .dashboard-card {
             border: none;
@@ -52,6 +51,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
             height: 100%;
+            cursor: pointer;
         }
 
             .dashboard-card:hover {
@@ -100,202 +100,192 @@
     <div class="header-section d-flex justify-content-between align-items-center">
         <h1 class="h2 mb-0">Dashboard Overview</h1>
         <div class="d-flex align-items-center" style="gap: 8px;">
-        <!-- Date Range Buttons -->
+            <!-- Date Range Buttons -->
             <button type="button" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-calendar-week"></i> This Week
             </button>
             <button type="button" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-calendar-month"></i> This Month
             </button>
-        <!-- Export Button -->
-        <button type="button" class="btn btn-sm btn-outline-primary">
-            <i class="bi bi-download"></i> Export
-        </button>
+            <!-- Export Button -->
+            <button type="button" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-download"></i> Export
+            </button>
+        </div>
     </div>
-</div>
 
- <div class="scrollable-container">
-
-    <!-- Scrollable Content Area -->
-    <div class="content-area">
-        <!-- Summary Cards -->
-        <div class="row mb-4 g-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="card dashboard-card text-white bg-primary h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">TOTAL EMPLOYEES</h6>
-                                <p class="card-text display-6">245</p>
-                                <p class="card-text"><small>+12 from last month</small></p>
+    <div class="scrollable-container">
+        <!-- Scrollable Content Area -->
+        <div class="content-area">
+            <!-- Summary Cards -->
+            <div class="row mb-4 g-4">
+                <div class="col-md-6 col-lg-4">
+                    <a href="/employees" class="text-decoration-none">
+                        <div class="card dashboard-card text-white bg-primary h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">TOTAL EMPLOYEES</h6>
+                                        <p class="card-text display-6">245</p>
+                                        <p class="card-text"><small>+12 from last month</small></p>
+                                    </div>
+                                    <i class="bi bi-people-fill fs-1 opacity-50"></i>
+                                </div>
                             </div>
-                            <i class="bi bi-people-fill fs-1 opacity-50"></i>
                         </div>
-                    </div>
+                    </a>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card dashboard-card text-white bg-success h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">DEPARTMENTS</h6>
-                                <p class="card-text display-6">12</p>
-                                <p class="card-text"><small>+2 new departments</small></p>
+                <div class="col-md-6 col-lg-4">
+                    <a href="/departments" class="text-decoration-none">
+                        <div class="card dashboard-card text-white bg-success h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">DEPARTMENTS</h6>
+                                        <p class="card-text display-6">12</p>
+                                        <p class="card-text"><small>+2 new departments</small></p>
+                                    </div>
+                                    <i class="bi bi-building fs-1 opacity-50"></i>
+                                </div>
                             </div>
-                            <i class="bi bi-building fs-1 opacity-50"></i>
                         </div>
-                    </div>
+                    </a>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card dashboard-card text-white bg-info h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">ATTENDANCE RATE</h6>
-                                <p class="card-text display-6">96.5%</p>
-                                <p class="card-text"><small>+2.1% from last month</small></p>
+                <div class="col-md-6 col-lg-4">
+                    <a href="/attendance" class="text-decoration-none">
+                        <div class="card dashboard-card text-white bg-info h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">ATTENDANCE RATE</h6>
+                                        <p class="card-text display-6">96.5%</p>
+                                        <p class="card-text"><small>+2.1% from last month</small></p>
+                                    </div>
+                                    <i class="bi bi-clipboard2-check fs-1 opacity-50"></i>
+                                </div>
                             </div>
-                            <i class="bi bi-clipboard2-check fs-1 opacity-50"></i>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card dashboard-card text-white bg-warning h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">PAYROLL</h6>
-                                <p class="card-text display-6">$245,500</p>
-                                <p class="card-text"><small>Processed this month</small></p>
-                            </div>
-                            <i class="bi bi-cash-stack fs-1 opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-4 mb-4">
-            <!-- Employee Growth Chart -->
-            <div class="col-lg-8">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Employee Growth</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="employeeGrowthChart" height="120"></canvas>
-                        </div>
-                    </div>
+                    </a>
                 </div>
             </div>
 
-            <!-- Recent Activities -->
-            <div class="col-lg-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Recent Activities</h5>
-                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+            <div class="row g-4 mb-4">
+                <!-- Employee Growth Chart -->
+                <div class="col-lg-8">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Employee Growth</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="employeeGrowthChart" height="120"></canvas>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body" style="overflow-y: auto; max-height: 350px;">
-                        <div class="activity-item">
-                            <div class="d-flex justify-content-between">
-                                <h6 class="mb-1"><span class="badge bg-primary me-2"><i class="bi bi-person-plus-fill"></i></span>New employee onboarded</h6>
-                                <small class="text-muted">2 hours ago</small>
-                            </div>
-                            <p class="mb-1 small">Sarah Johnson joined as UX Designer</p>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Recent Activities</h5>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
                         </div>
-                        <div class="activity-item">
-                            <div class="d-flex justify-content-between">
-                                <h6 class="mb-1"><span class="badge bg-success me-2"><i class="bi bi-list-check"></i></span>Performance review completed</h6>
-                                <small class="text-muted">5 hours ago</small>
+                        <div class="card-body" style="overflow-y: auto; max-height: 350px;">
+                            <div class="activity-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1"><span class="badge bg-primary me-2"><i class="bi bi-person-plus-fill"></i></span>New employee onboarded</h6>
+                                    <small class="text-muted">2 hours ago</small>
+                                </div>
+                                <p class="mb-1 small">Sarah Johnson joined as UX Designer</p>
                             </div>
-                            <p class="mb-1 small">15 reviews completed this week</p>
-                        </div>
-                        <div class="activity-item">
-                            <div class="d-flex justify-content-between">
-                                <h6 class="mb-1"><span class="badge bg-info me-2"><i class="bi bi-calendar-check"></i></span>Leave request approved</h6>
-                                <small class="text-muted">Yesterday</small>
+                            <div class="activity-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1"><span class="badge bg-success me-2"><i class="bi bi-list-check"></i></span>Performance review completed</h6>
+                                    <small class="text-muted">5 hours ago</small>
+                                </div>
+                                <p class="mb-1 small">15 reviews completed this week</p>
                             </div>
-                            <p class="mb-1 small">Michael Chan - 5 days vacation</p>
-                        </div>
-                        <div class="activity-item">
-                            <div class="d-flex justify-content-between">
-                                <h6 class="mb-1"><span class="badge bg-danger me-2"><i class="bi bi-person-x-fill"></i></span>Employee resigned</h6>
-                                <small class="text-muted">2 days ago</small>
+                            <div class="activity-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1"><span class="badge bg-info me-2"><i class="bi bi-calendar-check"></i></span>Leave request approved</h6>
+                                    <small class="text-muted">Yesterday</small>
+                                </div>
+                                <p class="mb-1 small">Michael Chan - 5 days vacation</p>
                             </div>
-                            <p class="mb-1 small">Robert Smith - Software Engineer</p>
-                        </div>
-                        <div class="activity-item">
-                            <div class="d-flex justify-content-between">
-                                <h6 class="mb-1"><span class="badge bg-warning me-2"><i class="bi bi-award"></i></span>Employee of the month</h6>
-                                <small class="text-muted">3 days ago</small>
+                            <div class="activity-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1"><span class="badge bg-danger me-2"><i class="bi bi-person-x-fill"></i></span>Employee resigned</h6>
+                                    <small class="text-muted">2 days ago</small>
+                                </div>
+                                <p class="mb-1 small">Robert Smith - Software Engineer</p>
                             </div>
-                            <p class="mb-1 small">Emily Davis selected for April</p>
+                            <div class="activity-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1"><span class="badge bg-warning me-2"><i class="bi bi-award"></i></span>Employee of the month</h6>
+                                    <small class="text-muted">3 days ago</small>
+                                </div>
+                                <p class="mb-1 small">Emily Davis selected for April</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Upcoming Tasks Table -->
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Upcoming Tasks</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Task</th>
-                                <th>Assignee</th>
-                                <th>Due Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Complete Q2 Performance Reviews</td>
-                                <td>HR Team</td>
-                                <td>May 15, 2023</td>
-                                <td><span class="badge bg-warning">In Progress</span></td>
-                                <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                            </tr>
-                            <tr>
-                                <td>Process May Payroll</td>
-                                <td>Finance Team</td>
-                                <td>May 5, 2023</td>
-                                <td><span class="badge bg-primary">Pending</span></td>
-                                <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                            </tr>
-                            <tr>
-                                <td>Onboard New Marketing Team</td>
-                                <td>Recruitment</td>
-                                <td>May 10, 2023</td>
-                                <td><span class="badge bg-success">Completed</span></td>
-                                <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                            </tr>
-                            <tr>
-                                <td>Update Employee Handbook</td>
-                                <td>HR Team</td>
-                                <td>May 20, 2023</td>
-                                <td><span class="badge bg-secondary">Not Started</span></td>
-                                <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Upcoming Tasks Table -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Upcoming Tasks</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Assignee</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Complete Q2 Performance Reviews</td>
+                                    <td>HR Team</td>
+                                    <td>May 15, 2023</td>
+                                    <td><span class="badge bg-warning">In Progress</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Process May Payroll</td>
+                                    <td>Finance Team</td>
+                                    <td>May 5, 2023</td>
+                                    <td><span class="badge bg-primary">Pending</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Onboard New Marketing Team</td>
+                                    <td>Recruitment</td>
+                                    <td>May 10, 2023</td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Update Employee Handbook</td>
+                                    <td>HR Team</td>
+                                    <td>May 20, 2023</td>
+                                    <td><span class="badge bg-secondary">Not Started</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
-
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
