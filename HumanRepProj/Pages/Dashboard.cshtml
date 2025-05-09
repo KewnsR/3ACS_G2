@@ -18,33 +18,31 @@
         .scrollable-container {
             position: absolute;
             left: 256px;
-            top: 80px; /* Account for header height */
+            top: 80px;
             width: calc(100% - 256px);
-            height: calc(100vh - 80px); /* Account for header height */
+            height: calc(100vh - 80px);
             overflow-y: auto;
         }
 
         .content-area {
             padding: 20px;
-            width: 100%; /* Changed from viewport-based width */
+            width: 100%;
         }
 
-        /* Fixed sticky header positioning */
         .header-section {
-            position: fixed; /* Changed from sticky */
+            position: fixed;
             top: 0;
             left: 256px;
             right: 0;
-            z-index: 1000; /* Increased z-index */
+            z-index: 1000;
             background-color: white;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             padding: 20px;
-            height: 80px; /* Explicit height */
+            height: 80px;
             display: flex;
             align-items: center;
         }
 
-        /* Dashboard cards with responsive enhancements */
         .dashboard-card {
             border: none;
             border-radius: 10px;
@@ -58,22 +56,25 @@
                 transform: translateY(-5px);
             }
 
-        /* Activity items with better spacing */
-        .activity-item {
-            border-left: 3px solid #0d6efd;
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Chart container with responsive height */
         .chart-container {
+            position: relative;
             background: #f8f9fa;
             border-radius: 10px;
             padding: 1rem;
             min-height: 300px;
+            width: 100%;
         }
 
-        /* Responsive adjustments */
+        #employeeGrowthChart {
+            width: 100% !important;
+            height: 300px !important;
+        }
+
+        .time-range-btn.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+
         @@media (max-width: 768px) {
             .dashboard-card .card-text.display-6 {
                 font-size: 1.75rem;
@@ -86,36 +87,38 @@
             .btn-group .btn {
                 font-size: 0.75rem;
             }
-        }
 
-        /* Ensure 100% zoom compatibility */
-        html {
-            font-size: 16px;
+            #employeeGrowthChart {
+                height: 250px !important;
+            }
         }
     </style>
 }
 
 <div class="app-container">
-    <!-- Moved header outside scrollable container -->
     <div class="header-section d-flex justify-content-between align-items-center">
         <h1 class="h2 mb-0">Dashboard Overview</h1>
         <div class="d-flex align-items-center" style="gap: 8px;">
             <!-- Date Range Buttons -->
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-                <i class="bi bi-calendar-week"></i> This Week
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-                <i class="bi bi-calendar-month"></i> This Month
-            </button>
-            <!-- Export Button -->
-            <button type="button" class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-download"></i> Export
-            </button>
+            <form method="post" asp-page-handler="ThisWeek">
+                <button type="submit" class="btn btn-sm time-range-btn @(Model.TimeRange == "week" ? "active" : "btn-outline-secondary")">
+                    <i class="bi bi-calendar-week"></i> This Week
+                </button>
+            </form>
+            <form method="post" asp-page-handler="ThisMonth">
+                <button type="submit" class="btn btn-sm time-range-btn @(Model.TimeRange == "month" ? "active" : "btn-outline-secondary")">
+                    <i class="bi bi-calendar-month"></i> This Month
+                </button>
+            </form>
+            <form method="post" asp-page-handler="6Months">
+                <button type="submit" class="btn btn-sm time-range-btn @(Model.TimeRange == "6months" ? "active" : "btn-outline-secondary")">
+                    <i class="bi bi-calendar-range"></i> 6 Months
+                </button>
+            </form>
         </div>
     </div>
 
     <div class="scrollable-container">
-        <!-- Scrollable Content Area -->
         <div class="content-area">
             <!-- Summary Cards -->
             <div class="row mb-4 g-4">
@@ -126,8 +129,8 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title">TOTAL EMPLOYEES</h6>
-                                        <p class="card-text display-6">245</p>
-                                        <p class="card-text"><small>+12 from last month</small></p>
+                                        <p class="card-text display-6" data-card="total-employees">@Model.TotalEmployees</p>
+                                        <p class="card-text"><small>+@Model.EmployeeChangeFromLastPeriod from last @(Model.TimeRange == "week" ? "week" : Model.TimeRange == "month" ? "month" : "period")</small></p>
                                     </div>
                                     <i class="bi bi-people-fill fs-1 opacity-50"></i>
                                 </div>
@@ -142,8 +145,8 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title">DEPARTMENTS</h6>
-                                        <p class="card-text display-6">12</p>
-                                        <p class="card-text"><small>+2 new departments</small></p>
+                                        <p class="card-text display-6">@Model.TotalDepartments</p>
+                                        <p class="card-text"><small>+@Model.NewDepartments new departments</small></p>
                                     </div>
                                     <i class="bi bi-building fs-1 opacity-50"></i>
                                 </div>
@@ -158,8 +161,8 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title">ATTENDANCE RATE</h6>
-                                        <p class="card-text display-6">96.5%</p>
-                                        <p class="card-text"><small>+2.1% from last month</small></p>
+                                        <p class="card-text display-6">@Model.AttendanceRate.ToString("0.0")%</p>
+                                        <p class="card-text"><small>+@Model.AttendanceChangeFromLastPeriod.ToString("0.0")% from last @(Model.TimeRange == "week" ? "week" : Model.TimeRange == "month" ? "month" : "period")</small></p>
                                     </div>
                                     <i class="bi bi-clipboard2-check fs-1 opacity-50"></i>
                                 </div>
@@ -169,117 +172,21 @@
                 </div>
             </div>
 
+            <!-- Employee Growth Chart -->
             <div class="row g-4 mb-4">
-                <!-- Employee Growth Chart -->
-                <div class="col-lg-8">
+                <div class="col-12">
                     <div class="card shadow-sm h-100">
                         <div class="card-header bg-white">
-                            <h5 class="mb-0">Employee Growth</h5>
+                            <h5 class="mb-0">Employee Growth (Based on Hire Dates)</h5>
                         </div>
                         <div class="card-body">
                             <div class="chart-container">
-                                <canvas id="employeeGrowthChart" height="120"></canvas>
+                                <canvas id="employeeGrowthChart"
+                                        data-labels='@Json.Serialize(Model.EmployeeGrowthLabels ?? new List<string>())'
+                                        data-values='@Json.Serialize(Model.EmployeeGrowthCounts ?? new List<int>())'>
+                                </canvas>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activities -->
-                <div class="col-lg-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Recent Activities</h5>
-                            <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
-                        </div>
-                        <div class="card-body" style="overflow-y: auto; max-height: 350px;">
-                            <div class="activity-item">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="mb-1"><span class="badge bg-primary me-2"><i class="bi bi-person-plus-fill"></i></span>New employee onboarded</h6>
-                                    <small class="text-muted">2 hours ago</small>
-                                </div>
-                                <p class="mb-1 small">Sarah Johnson joined as UX Designer</p>
-                            </div>
-                            <div class="activity-item">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="mb-1"><span class="badge bg-success me-2"><i class="bi bi-list-check"></i></span>Performance review completed</h6>
-                                    <small class="text-muted">5 hours ago</small>
-                                </div>
-                                <p class="mb-1 small">15 reviews completed this week</p>
-                            </div>
-                            <div class="activity-item">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="mb-1"><span class="badge bg-info me-2"><i class="bi bi-calendar-check"></i></span>Leave request approved</h6>
-                                    <small class="text-muted">Yesterday</small>
-                                </div>
-                                <p class="mb-1 small">Michael Chan - 5 days vacation</p>
-                            </div>
-                            <div class="activity-item">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="mb-1"><span class="badge bg-danger me-2"><i class="bi bi-person-x-fill"></i></span>Employee resigned</h6>
-                                    <small class="text-muted">2 days ago</small>
-                                </div>
-                                <p class="mb-1 small">Robert Smith - Software Engineer</p>
-                            </div>
-                            <div class="activity-item">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="mb-1"><span class="badge bg-warning me-2"><i class="bi bi-award"></i></span>Employee of the month</h6>
-                                    <small class="text-muted">3 days ago</small>
-                                </div>
-                                <p class="mb-1 small">Emily Davis selected for April</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Upcoming Tasks Table -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Upcoming Tasks</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Task</th>
-                                    <th>Assignee</th>
-                                    <th>Due Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Complete Q2 Performance Reviews</td>
-                                    <td>HR Team</td>
-                                    <td>May 15, 2023</td>
-                                    <td><span class="badge bg-warning">In Progress</span></td>
-                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Process May Payroll</td>
-                                    <td>Finance Team</td>
-                                    <td>May 5, 2023</td>
-                                    <td><span class="badge bg-primary">Pending</span></td>
-                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Onboard New Marketing Team</td>
-                                    <td>Recruitment</td>
-                                    <td>May 10, 2023</td>
-                                    <td><span class="badge bg-success">Completed</span></td>
-                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Update Employee Handbook</td>
-                                    <td>HR Team</td>
-                                    <td>May 20, 2023</td>
-                                    <td><span class="badge bg-secondary">Not Started</span></td>
-                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -290,42 +197,176 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Initialize Chart
-        const ctx = document.getElementById('employeeGrowthChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                datasets: [{
-                    label: 'Employees',
-                    data: [200, 210, 220, 230, 245],
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#0d6efd'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                },
-                scales: {
-                    y: { beginAtZero: true, grid: { display: false } },
-                    x: { grid: { display: false } }
-                }
+        // Global chart reference
+        let employeeGrowthChart = null;
+
+        function initializeChart() {
+            const ctx = document.getElementById('employeeGrowthChart');
+            if (!ctx) {
+                console.error('Chart canvas element not found!');
+                return;
             }
+
+            try {
+                // Get initial data from data attributes with fallback to empty arrays
+                const labels = JSON.parse(ctx.dataset.labels || '[]');
+                const values = JSON.parse(ctx.dataset.values || '[]');
+
+                console.log('Initial chart data:', { labels, values });
+
+                // Destroy existing chart if it exists
+                if (employeeGrowthChart) {
+                    employeeGrowthChart.destroy();
+                }
+
+                // Create new chart instance
+                employeeGrowthChart = new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Employees',
+                            data: values,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#0d6efd',
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Employees: ${context.raw}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                suggestedMin: 0,
+                                grid: { display: false },
+                                ticks: { precision: 0 }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    autoSkip: false,
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 500,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+
+                console.log('Chart initialized successfully');
+            } catch (error) {
+                console.error('Error initializing chart:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+
+            // Handle all time range button clicks
+            document.querySelectorAll('form[method="post"]').forEach(form => {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const button = this.querySelector('button');
+                    if (!button) return;
+
+                    // Show loading state
+                    const originalHtml = button.innerHTML;
+                    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+                    button.disabled = true;
+
+                    try {
+                        console.log(`Fetching data for: ${this.action}`);
+
+                        const formData = new FormData(this);
+                        const response = await fetch(this.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || '',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        const result = await response.json();
+                        console.log('Data received:', result);
+
+                        if (!result.success) {
+                            throw new Error(result.error || 'Error in response');
+                        }
+
+                        if (!result.employeeGrowthLabels || !result.employeeGrowthCounts) {
+                            throw new Error('Invalid data format received from server');
+                        }
+
+                        // Update chart data with smooth transition
+                        employeeGrowthChart.data.labels = result.employeeGrowthLabels;
+                        employeeGrowthChart.data.datasets[0].data = result.employeeGrowthCounts;
+                        employeeGrowthChart.update();
+
+                        // Update summary cards
+                        if (result.totalEmployees) {
+                            const totalEmployeesEl = document.querySelector('[data-card="total-employees"]');
+                            if (totalEmployeesEl) {
+                                totalEmployeesEl.textContent = result.totalEmployees;
+                                const changeText = totalEmployeesEl.nextElementSibling.querySelector('small');
+                                if (changeText) {
+                                    const periodText = result.timeRange === "week" ? "week" :
+                                                     result.timeRange === "month" ? "month" : "period";
+                                    changeText.textContent = `+${result.employeeChangeFromLastPeriod} from last ${periodText}`;
+                                }
+                            }
+                        }
+
+                        // Update active button state
+                        document.querySelectorAll('.time-range-btn').forEach(btn => {
+                            btn.classList.remove('active', 'btn-primary');
+                            btn.classList.add('btn-outline-secondary');
+                        });
+                        button.classList.remove('btn-outline-secondary');
+                        button.classList.add('active', 'btn-primary');
+
+                    } catch (error) {
+                        console.error('Error fetching chart data:', error);
+                        alert('Error loading data: ' + error.message);
+                    } finally {
+                        // Restore button state
+                        button.innerHTML = originalHtml;
+                        button.disabled = false;
+                    }
+                });
+            });
         });
 
-        // Tooltip initialization (unchanged)
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
+        // Make chart responsive to window resize
+        window.addEventListener('resize', function() {
+            if (employeeGrowthChart) {
+                employeeGrowthChart.resize();
+            }
         });
     </script>
 }
