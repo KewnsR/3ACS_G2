@@ -133,6 +133,8 @@ namespace HumanRepProj.Data
 
                 entity.HasIndex(e => e.ManagerID)
                       .HasDatabaseName("IX_Employees_ManagerID");
+
+
             });
         }
 
@@ -157,8 +159,12 @@ namespace HumanRepProj.Data
                 entity.Property(a => a.CreatedAt).HasColumnType("datetime2").HasColumnName("CreatedAt").HasDefaultValueSql("GETDATE()");
                 entity.Property(a => a.UpdatedAt).HasColumnType("datetime2").HasColumnName("UpdatedAt").HasDefaultValueSql("GETDATE()");
 
-               
-            });
+                entity.HasOne(a => a.Employee)
+                       .WithMany(e => e.AttendanceRecords)
+                       .HasForeignKey(a => a.EmployeeID)
+                       .OnDelete(DeleteBehavior.Cascade);
+           
+        });
         }
 
         public override int SaveChanges()

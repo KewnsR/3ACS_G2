@@ -1,6 +1,8 @@
 ﻿@{
+    // ✅ Valid: Assigning values to variables
     var currentPath = Context.Request.Path.Value.ToLower();
-    var hideSidebar = currentPath.Contains("/user");
+    var hideSidebar = currentPath.Contains("/user") || currentPath.Contains("/attendance/recordattendance");
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -197,9 +199,6 @@
                 </a>
                 <a href="/Attendance" class="menu-item" id="attendance-btn">
                     <i class="fas fa-clock"></i> Attendance
-                </a>
-                <a href="/Reports" class="menu-item" id="reports-btn">
-                    <i class="fas fa-file-alt"></i> Reports
                 </a>
                 <a href="/Payroll" class="menu-item" id="payroll-btn">
                     <i class="fas fa-dollar-sign"></i> Payroll

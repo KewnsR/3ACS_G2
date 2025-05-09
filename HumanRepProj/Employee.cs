@@ -87,8 +87,10 @@ namespace HumanRepProj.Models
         [ValidateNever]
         public string FullName => $"{FirstName} {LastName}";
 
+        [ValidateNever]
+        public virtual ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
 
-       
+
         [ValidateNever]
         public string DepartmentName => Department?.Name ?? "Unassigned";
     }
