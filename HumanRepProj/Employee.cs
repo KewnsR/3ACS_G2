@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using HumanRepProj.Controllers;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -90,8 +91,15 @@ namespace HumanRepProj.Models
         [ValidateNever]
         public virtual ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
 
-
+        [NotMapped]
         [ValidateNever]
         public string DepartmentName => Department?.Name ?? "Unassigned";
+
+        // Face data relationship
+        public int? FaceDataID { get; set; }
+
+        [ForeignKey("FaceDataID")]
+        [ValidateNever]
+        public virtual FaceData? FaceData { get; set; }
     }
 }

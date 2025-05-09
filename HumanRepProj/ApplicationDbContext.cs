@@ -1,3 +1,4 @@
+using HumanRepProj.Controllers;
 using HumanRepProj.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,6 +20,7 @@ namespace HumanRepProj.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
+        public DbSet<FaceData> FaceData { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

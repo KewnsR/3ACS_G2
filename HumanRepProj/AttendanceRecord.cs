@@ -38,3 +38,4 @@ public class AttendanceRecord
     [ForeignKey("EmployeeID")]
     public virtual Employee Employee { get; set; }
 }
+    
