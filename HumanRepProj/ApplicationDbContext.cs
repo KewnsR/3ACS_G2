@@ -14,19 +14,24 @@ namespace HumanRepProj.Data
         {
         }
 
-        // Existing DbSets
+        // DbSets
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
-
-        // New DbSet for Attendance
         public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // ApplicationUser Configuration
+            ConfigureApplicationUser(modelBuilder);
+            ConfigureDepartment(modelBuilder);
+            ConfigureEmployee(modelBuilder);
+            ConfigureAttendanceRecord(modelBuilder);
+        }
+
+        private void ConfigureApplicationUser(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.ToTable("Logins");
@@ -47,19 +52,21 @@ namespace HumanRepProj.Data
                       .HasForeignKey(u => u.EmployeeID)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+        }
 
-            // Department Configuration
+        private void ConfigureDepartment(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Department>(entity =>
             {
                 entity.ToTable("Departments");
                 entity.HasKey(d => d.DepartmentID);
                 entity.Property(d => d.DepartmentID).HasColumnName("DepartmentID").ValueGeneratedOnAdd();
                 entity.Property(d => d.Name).IsRequired().HasColumnName("DepartmentName").HasMaxLength(100);
-                entity.Property(d => d.Description).HasMaxLength(500);
-                entity.Property(d => d.Performance).HasColumnType("decimal(18,2)");
-                entity.Property(d => d.DateCreated).HasColumnType("datetime2").HasDefaultValueSql("GETDATE()");
-                entity.Property(d => d.Budget).HasColumnType("decimal(18,2)");
-                entity.Property(d => d.Status).HasMaxLength(50).HasDefaultValue("Active");
+                entity.Property(d => d.Description).HasMaxLength(500).HasColumnName("Description");
+                entity.Property(d => d.Performance).HasColumnType("decimal(18,2)").HasColumnName("Performance");
+                entity.Property(d => d.DateCreated).HasColumnType("datetime2").HasColumnName("DateCreated").HasDefaultValueSql("GETDATE()");
+                entity.Property(d => d.Budget).HasColumnType("decimal(18,2)").HasColumnName("Budget");
+                entity.Property(d => d.Status).HasMaxLength(50).HasColumnName("Status").HasDefaultValue("Active");
                 entity.HasIndex(d => d.Name).IsUnique().HasDatabaseName("IX_Departments_Name");
 
                 entity.HasMany(d => d.Employees)
@@ -67,8 +74,10 @@ namespace HumanRepProj.Data
                       .HasForeignKey(e => e.DepartmentID)
                       .OnDelete(DeleteBehavior.Restrict);
             });
+        }
 
-            // Employee Configuration
+        private void ConfigureEmployee(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Employee>(entity =>
             {
                 entity.ToTable("Employees");
@@ -94,7 +103,7 @@ namespace HumanRepProj.Data
                 entity.Property(e => e.DateHired).IsRequired().HasColumnType("date").HasColumnName("DateHired");
 
                 // Status
-                entity.Property(e => e.Status).IsRequired().HasMaxLength(50).HasDefaultValue("Active").HasColumnName("Status");
+                entity.Property(e => e.Status).IsRequired().HasMaxLength(50).HasColumnName("Status").HasDefaultValue("Active");
                 entity.Property(e => e.EmploymentType).HasMaxLength(20).HasColumnName("EmploymentType").HasDefaultValue("Full-time");
 
                 // Manager relationship
@@ -125,11 +134,13 @@ namespace HumanRepProj.Data
                 entity.HasIndex(e => e.ManagerID)
                       .HasDatabaseName("IX_Employees_ManagerID");
             });
+        }
 
-            // AttendanceRecord Configuration
+        private void ConfigureAttendanceRecord(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<AttendanceRecord>(entity =>
             {
-                entity.ToTable("Attendance"); // Explicitly set table name
+                entity.ToTable("Attendance");
                 entity.HasKey(a => a.AttendanceID);
                 entity.Property(a => a.AttendanceID).HasColumnName("AttendanceID").ValueGeneratedOnAdd();
 
@@ -146,11 +157,7 @@ namespace HumanRepProj.Data
                 entity.Property(a => a.CreatedAt).HasColumnType("datetime2").HasColumnName("CreatedAt").HasDefaultValueSql("GETDATE()");
                 entity.Property(a => a.UpdatedAt).HasColumnType("datetime2").HasColumnName("UpdatedAt").HasDefaultValueSql("GETDATE()");
 
-                // Relationship
-                entity.HasOne(a => a.Employee)
-                      .WithMany(e => e.AttendanceRecords)
-                      .HasForeignKey(a => a.EmployeeID)
-                      .OnDelete(DeleteBehavior.Cascade);
+               
             });
         }
 
@@ -171,18 +178,21 @@ namespace HumanRepProj.Data
             var entries = ChangeTracker
                 .Entries()
                 .Where(e => e.Entity is BaseEntity &&
-                            (e.State == EntityState.Added || e.State == EntityState.Modified));
+                             (e.State == EntityState.Added || e.State == EntityState.Modified));
 
-            var currentTime = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
 
             foreach (var entry in entries)
             {
-                var entity = (BaseEntity)entry.Entity;
-                if (entry.State == EntityState.Added)
+                if (entry.Entity is BaseEntity entity)
                 {
-                    entity.CreatedAt = currentTime;
+                    if (entry.State == EntityState.Added)
+                    {
+                        entity.CreatedAt = now;
+                    }
+
+                    entity.UpdatedAt = now;
                 }
-                entity.UpdatedAt = currentTime;
             }
         }
     }

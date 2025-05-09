@@ -13,10 +13,10 @@ namespace HumanRepProj.Models
 
         [Required]
         [StringLength(100, ErrorMessage = "Department name cannot exceed 100 characters.")]
-        public string Name { get; set; } = string.Empty; // Initialize with empty string
+        public string Name { get; set; } = string.Empty;
 
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
-        public string Description { get; set; } = string.Empty; // Initialize
+        public string Description { get; set; } = string.Empty;
 
         [Range(0, 100, ErrorMessage = "Performance must be between 0 and 100.")]
         public decimal Performance { get; set; }
@@ -30,15 +30,15 @@ namespace HumanRepProj.Models
         [Required]
         public string Status { get; set; } = "Active";
 
-        // Manager relationship (nullable)
+        // Nullable Manager relationship
         public int? ManagerID { get; set; }
 
         [ForeignKey("ManagerID")]
         [ValidateNever]
-        public virtual Employee? Manager { get; set; } // Made nullable
+        public virtual Employee? Manager { get; set; }
 
         // Navigation property for employees
         [ValidateNever]
-        public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>(); // Initialize collection
+        public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
     }
 }

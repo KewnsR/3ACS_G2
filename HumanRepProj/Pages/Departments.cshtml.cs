@@ -82,20 +82,42 @@ namespace HumanRepProj.Pages
         public async Task<IActionResult> OnGetAsync(int? departmentId = null)
         {
             var userEmail = HttpContext.Session.GetString("Username");
-
             if (string.IsNullOrEmpty(userEmail))
             {
                 _logger.LogWarning("Session expired or user not logged in.");
                 return RedirectToPage("/Login");
             }
-
             _logger.LogInformation($"User {userEmail} accessed the Departments page.");
 
+            // Load all departments for display
             await LoadDepartments();
 
+            // If a department ID is provided, load its context
             if (departmentId.HasValue)
             {
                 SelectedDepartmentId = departmentId;
+
+                // Fetch the department entity
+                var department = await _context.Departments
+                    .FirstOrDefaultAsync(d => d.DepartmentID == departmentId);
+
+                if (department != null)
+                {
+                    // Populate Input model for server-bound forms
+                    Input = new DepartmentInputModel
+                    {
+                        DepartmentID = department.DepartmentID,
+                        Name = department.Name,
+                        Description = department.Description ?? string.Empty,
+                        Performance = department.Performance,
+                        DateCreated = department.DateCreated,
+                        Budget = department.Budget,
+                        Status = department.Status,
+                        ManagerID = department.ManagerID
+                    };
+                }
+
+                // Always load employees and potential managers if department is selected
                 await LoadDepartmentEmployees(departmentId.Value);
                 await LoadPotentialManagers(departmentId.Value);
             }
@@ -187,13 +209,12 @@ namespace HumanRepProj.Pages
 
             if (!Input.DepartmentID.HasValue)
             {
-                ModelState.AddModelError(string.Empty, "Department ID is required for editing.");
+                ModelState.AddModelError(string.Empty, "Department ID is required.");
                 await LoadDepartments();
                 return Page();
             }
 
             var department = await _context.Departments.FindAsync(Input.DepartmentID.Value);
-
             if (department == null)
             {
                 ModelState.AddModelError(string.Empty, "Department not found.");
@@ -201,13 +222,10 @@ namespace HumanRepProj.Pages
                 return Page();
             }
 
-            // Get previous manager before updating
-            var previousManagerId = department.ManagerID;
-
+            // Update properties
             department.Name = Input.Name;
             department.Description = Input.Description;
             department.Performance = Input.Performance;
-            department.DateCreated = Input.DateCreated;
             department.Budget = Input.Budget;
             department.Status = Input.Status;
             department.ManagerID = Input.ManagerID;
@@ -215,18 +233,14 @@ namespace HumanRepProj.Pages
             _context.Departments.Update(department);
             await _context.SaveChangesAsync();
 
-            // Update manager statuses
-            if (previousManagerId.HasValue && previousManagerId != Input.ManagerID)
+            // Optional: Update employee manager status
+            var previousManagerId = department.ManagerID; // Already updated above
+            if (previousManagerId.HasValue)
             {
-                await UpdateEmployeeManagerStatus(previousManagerId.Value, false);
+                await UpdateEmployeeManagerStatus(previousManagerId.Value, true);
             }
 
-            if (Input.ManagerID.HasValue)
-            {
-                await UpdateEmployeeManagerStatus(Input.ManagerID.Value, true);
-            }
-
-            return RedirectToPage();
+            return RedirectToPage(); // Or use TempData["SuccessMessage"]
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
@@ -314,21 +328,23 @@ namespace HumanRepProj.Pages
             return RedirectToPage(new { departmentId = SelectedDepartmentId.Value });
         }
 
-        private async Task UpdateEmployeeManagerStatus(int employeeId, bool isManager)
+        private async Task UpdateEmployeeManagerStatus(int? employeeId, bool isManager)
         {
-            var employee = await _context.Employees.FindAsync(employeeId);
-            if (employee != null)
+            if (employeeId.HasValue)
             {
-                employee.IsManager = isManager;
-                _context.Employees.Update(employee);
-                await _context.SaveChangesAsync();
+                var employee = await _context.Employees.FindAsync(employeeId.Value);
+                if (employee != null)
+                {
+                    employee.IsManager = isManager;
+                    _context.Employees.Update(employee);
+                    await _context.SaveChangesAsync();
+                }
             }
         }
 
         public async Task<JsonResult> OnGetDepartmentDetailsAsync(int id)
         {
             var department = await _context.Departments.FindAsync(id);
-
             if (department == null)
             {
                 return new JsonResult(new { success = false, message = "Department not found." });
@@ -341,7 +357,7 @@ namespace HumanRepProj.Pages
                 {
                     department.DepartmentID,
                     department.Name,
-                    department.Description,
+                    Description = department.Description ?? string.Empty,
                     department.Performance,
                     department.DateCreated,
                     department.Budget,
@@ -375,8 +391,7 @@ namespace HumanRepProj.Pages
                 .Select(e => new
                 {
                     e.EmployeeID,
-                    FullName = $"{e.FirstName} {e.LastName}",
-                    e.Position
+                    FullName = $"{e.FirstName} {e.LastName}"
                 })
                 .ToListAsync();
 
