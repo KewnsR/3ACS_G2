@@ -1,0 +1,348 @@
+﻿@page
+@model HumanRepProj.Pages.UserProfileModel
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="dashboard-container">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="avatar-circle">
+                <span class="initials">@Model.UserName.Substring(0, 1).ToUpper()</span>
+            </div>
+            <h2>@Model.UserName</h2>
+            <p class="user-role">@Model.Role</p>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#profile-details">Profile Details</a></li>
+                <li><a href="#leave-overview">Leave Overview</a></li>
+                <li><a href="/settings">Settings</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="profile-header">
+            <h1>Welcome, @Model.UserName</h1>
+            <p class="subtitle">Manage your personal information</p>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="card profile-card" id="profile-details">
+                <div class="card-header">
+                    <h2>Profile Details</h2>
+                    <button class="icon-button" id="editProfileBtn" title="Edit Profile">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div class="info-group">
+                        <span class="info-label">Full Name</span>
+                        <span class="info-value">@Model.FullName</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">@Model.Email</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Role</span>
+                        <span class="info-badge">@Model.Role</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card stats-card" id="leave-overview">
+                <div class="card-header">
+                    <h2>Leave Overview</h2>
+                </div>
+                <div class="card-content">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value">12</span>
+                            <span class="stat-label">Annual Leave</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">5</span>
+                            <span class="stat-label">Sick Leave</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">3</span>
+                            <span class="stat-label">Personal Leave</span>
+                        </div>
+                    </div>
+                    <a href="/leave-request" class="btn btn-primary mt-4">Request Leave</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Base & Typography */
+    :root {
+        --primary: #6366f1; /* Primary color */
+        --primary-hover: #5b5fff;
+        --secondary: #9ca3af; /* Secondary color */
+        --success: #22c55e;
+        --danger: #ef4444;
+        --warning: #fbbf24;
+        --gray-100: #f7fafc;
+        --gray-200: #edf2f7;
+        --gray-300: #e2e8f0;
+        --gray-400: #cbd5e0;
+        --gray-500: #a0aec0;
+        --gray-600: #718096;
+        --gray-700: #4a5568;
+        --gray-800: #2d3748;
+        --gray-900: #1a202c;
+        --border-radius: 10px;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        color: var(--gray-800);
+        background-color: #f7fafc;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Layout */
+    .dashboard-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 2rem auto;
+        gap: 2rem;
+    }
+
+    .sidebar {
+        width: 250px;
+        background-color: var(--gray-100);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 1rem;
+    }
+
+    .sidebar-header {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .avatar-circle {
+        width: 72px;
+        height: 72px;
+        background-color: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.75rem;
+        font-weight: 600;
+    }
+
+    .sidebar h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-800);
+    }
+
+    .user-role {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        margin-top: 0.25rem;
+    }
+
+    .sidebar-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-nav li {
+        margin-bottom: 0.5rem;
+    }
+
+    .sidebar-nav a {
+        text-decoration: none;
+        color: var(--gray-800);
+        transition: color 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+    }
+
+        .sidebar-nav a:hover {
+            background-color: var(--gray-200);
+            color: var(--primary);
+        }
+
+    .main-content {
+        flex: 1;
+    }
+
+    .profile-header {
+        margin-bottom: 2rem;
+    }
+
+        .profile-header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+    .subtitle {
+        color: var(--gray-600);
+        font-size: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Cards */
+    .card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+    .card-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .info-group {
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-weight: 500;
+    }
+
+    .info-badge {
+        background-color: var(--gray-100);
+        color: var(--primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 1rem;
+        background-color: var(--gray-100);
+        border-radius: var(--border-radius);
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        font-size: 0.925rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: white;
+        text-decoration: none;
+    }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+    .icon-button {
+        background: none;
+        border: none;
+        color: var(--gray-600);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+        .icon-button:hover {
+            background-color: var(--gray-100);
+            color: var(--primary);
+        }
+
+    .mt-4 {
+        margin-top: 1.5rem;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Profile edit button
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', function () {
+                alert('Edit profile functionality will be implemented here');
+            });
+        }
+    });
+</script>

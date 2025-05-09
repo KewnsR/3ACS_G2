@@ -25,7 +25,7 @@ namespace HumanRepProj.Pages
             }
 
             // Authentication logic - replace with your actual implementation
-            if (LoginInput.Username == "admin" && LoginInput.Password == "password")
+            if (LoginInput.Username == "user@email.com" && LoginInput.Password == "pass123")
             {
                 // Simulate setting a session or authentication token
                 HttpContext.Session.SetString("UserName", LoginInput.Username);

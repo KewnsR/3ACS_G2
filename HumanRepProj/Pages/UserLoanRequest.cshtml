@@ -1,0 +1,59 @@
+﻿@page
+@model HumanRepProj.Pages.UserLoanRequestModel
+@{
+    ViewData["Title"] = "Loan Request";
+}
+
+<div class="loan-container">
+    <h1>Loan Request</h1>
+    <p>Submit your loan request below.</p>
+
+    <form method="post" class="loan-form">
+        <div class="form-group">
+            <label for="loanAmount">Loan Amount</label>
+            <input type="number" id="loanAmount" name="LoanAmount" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="loanReason">Reason</label>
+            <textarea id="loanReason" name="LoanReason" class="form-control" rows="4" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+    </form>
+</div>
+
+<style>
+    .loan-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 5px;
+    }
+
+    .btn-primary {
+        background-color: #4f46e5;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+</style>

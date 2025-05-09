@@ -32,7 +32,7 @@
     }
 
     .card-header {
-        background: linear-gradient(135deg, #4776E6 0%, #8E54E9 100%);
+        background: linear-gradient(135deg, #1D2024);
         color: #fff;
         text-align: center;
         padding: 20px;
@@ -70,7 +70,7 @@
         width: 100%;
         padding: 12px;
         border-radius: 10px;
-        background: linear-gradient(135deg, #4776E6 0%, #8E54E9 100%);
+        background: linear-gradient(135deg, #1D2024);
         color: #fff;
         font-weight: bold;
         border: none;
@@ -78,7 +78,7 @@
     }
 
         .btn-login:hover {
-            background: linear-gradient(135deg, #8E54E9 0%, #4776E6 100%);
+            background: linear-gradient(135deg, #328E6E);
             box-shadow: 0 5px 15px rgba(78, 115, 223, 0.4);
         }
 
@@ -116,7 +116,7 @@
         <form method="post" id="loginForm">
             <div class="form-floating mb-4">
                 <input asp-for="LoginInput.Username" class="form-control" id="email" placeholder="Email" required />
-                <label for="username">Email</label>
+                <label for="username">Email or Username</label>
                 <span asp-validation-for="LoginInput.Username" class="error-message"></span>
             </div>
 

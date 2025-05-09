@@ -34,7 +34,7 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, #4776E6 0%, #8E54E9 100%);
+            background: linear-gradient(135deg, #1D2024);
             color: #fff;
             text-align: center;
             padding: 20px;
@@ -121,7 +121,7 @@
             width: 100%;
             padding: 12px;
             border-radius: 10px;
-            background: linear-gradient(135deg, #4776E6 0%, #8E54E9 100%);
+            background: linear-gradient(135deg, #1D2024);
             color: #fff;
             font-weight: bold;
             border: none;
@@ -135,16 +135,10 @@
                 margin-right: 8px;
             }
 
-        .create-account {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .create-account-link {
-            color: #4e73df;
-            font-weight: 500;
-            text-decoration: none;
-        }
+			.btn-login:hover {
+                background: linear-gradient(135deg, #328E6E);
+				box-shadow: 0 5px 15px rgba(78, 115, 223, 0.4);
+			}
 
             .create-account-link:hover {
                 color: #8E54E9;
@@ -160,7 +154,7 @@
         <div class="card-body">
             <form method="post">
                 <div class="form-group">
-                    <label for="username">Email</label>
+                    <label for="username">Email or Username</label>
                     <input type="text" class="form-control" id="username" name="Input.Email" placeholder="username@email.com" required />
                 </div>
 
@@ -183,10 +177,6 @@
                 <button type="submit" class="btn-login">
                     <i class="fas fa-sign-in-alt"></i> Login
                 </button>
-
-                <div class="create-account">
-                    <p>Don't have an account? <a href="#" class="create-account-link">Create Account</a></p>
-                </div>
 
                 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
                 {
