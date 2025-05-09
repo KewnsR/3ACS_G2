@@ -2,354 +2,678 @@
 @model HumanRepProj.Pages.UserLeaveRequestModel
 @{
     ViewData["Title"] = "Leave Request";
+    string currentPath = HttpContext.Request.Path;
 }
 
-<div class="dashboard-container">
-    <div class="dashboard-header">
-        <h1>Leave Request</h1>
-        <p class="subtitle">Submit your leave application</p>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HR Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --transition: all 0.3s ease;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --border-radius: 0.5rem;
+        }
 
-    <div class="dashboard-content">
-        <div class="card form-card">
-            <form method="post" class="leave-form">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="leaveType">Leave Type</label>
-                        <div class="select-wrapper">
-                            <select id="leaveType" name="LeaveType" class="form-control">
-                                <option value="">Select leave type</option>
-                                <option value="Sick Leave">Sick Leave</option>
-                                <option value="Casual Leave">Casual Leave</option>
-                                <option value="Annual Leave">Annual Leave</option>
-                                <option value="Personal Leave">Personal Leave</option>
-                            </select>
-                            <div class="select-arrow"></div>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #1e293b;
+            font-size: 0.875rem;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar - Fixed to match reference image */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            color: #475569;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100%;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .sidebar-user {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .user-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .user-role {
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+
+        .nav-title {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+            padding-left: 0.75rem;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            color: #475569;
+            text-decoration: none;
+            transition: var(--transition);
+            border-radius: var(--border-radius);
+        }
+
+            .sidebar-nav a.active {
+                background-color: var(--primary-light);
+                color: var(--primary);
+                font-weight: 600;
+            }
+
+            .sidebar-nav a i {
+                width: 20px;
+                text-align: center;
+            }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+            .sidebar-footer a {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem;
+                color: #475569;
+                text-decoration: none;
+                transition: var(--transition);
+                border-radius: var(--border-radius);
+            }
+
+                .sidebar-footer a:hover {
+                    background-color: #f1f5f9;
+                }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            width: 300px;
+        }
+
+            .search-bar input {
+                border: none;
+                outline: none;
+                background: transparent;
+                width: 100%;
+                margin-left: 0.5rem;
+                font-size: 0.875rem;
+            }
+
+        /* Content Container */
+        .content-container {
+            padding: 2rem;
+            flex-grow: 1;
+        }
+
+        /* Leave Request Specific Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .leave-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @@media (max-width: 1024px) {
+            .leave-container
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        }
+
+        .leave-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            background-color: #f8fafc;
+            transition: var(--transition);
+        }
+
+            .form-control:focus, .form-select:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            }
+
+        .date-picker {
+            display: flex;
+            gap: 1rem;
+        }
+
+            .date-picker .form-group {
+                flex: 1;
+            }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--primary-hover);
+            }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--secondary);
+            border: 1px solid #e2e8f0;
+        }
+
+            .btn-outline:hover {
+                background-color: #f1f5f9;
+            }
+
+        /* Leave Balance */
+        .leave-balance {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .balance-card {
+            background: #f8fafc;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .balance-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--primary);
+        }
+
+        .balance-label {
+            font-size: 0.75rem;
+            color: var(--secondary);
+        }
+
+        /* Leave History */
+        .leave-history {
+            margin-top: 2rem;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .history-table th, .history-table td {
+                padding: 1rem;
+                text-align: left;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .history-table th {
+                font-weight: 600;
+                color: var(--secondary);
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: var(--warning);
+        }
+
+        .status-approved {
+            background-color: #dcfce7;
+            color: var(--success);
+        }
+
+        .status-rejected {
+            background-color: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .sidebar
+
+        {
+            transform: translateX(-100%);
+            position: fixed;
+            width: 280px;
+            z-index: 1001;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .top-nav {
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .content-container {
+            padding: 1rem;
+        }
+
+        .date-picker {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar - Fixed to match reference image -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">HR Portal</div>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-name">John Doe</div>
+                <div class="user-role">Employee</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">Main Menu</p>
+                <ul>
+                    <li>
+                        <a href="/UserDashboard">
+                            <i class="fas fa-th-large"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/UserProfile">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/UserLeaveRequest" class="active">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Leave Request</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/UserLoanRequest">
+                            <i class="fas fa-hand-holding-usd"></i>
+                            <span>Loan Request</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="nav-title">Others</p>
+                <ul>
+                    <li>
+                        <a href="/UserHelp">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Help</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/UserLogin?logout=true">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Page Content -->
+            <div class="content-container">
+                <div class="page-header">
+                    <h1 class="page-title">Request Leave</h1>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Request
+                    </button>
+                </div>
+
+                <div class="leave-container">
+                    <!-- Leave Request Form -->
+                    <div class="leave-card">
+                        <h3 class="section-title">Request Leave</h3>
+
+                        <form>
+                            <div class="form-group">
+                                <label class="form-label">Leave Type</label>
+                                <select class="form-select">
+                                    <option value="">Select leave type</option>
+                                    <option value="annual">Annual Leave</option>
+                                    <option value="sick">Sick Leave</option>
+                                    <option value="personal">Personal Leave</option>
+                                    <option value="maternity">Maternity Leave</option>
+                                    <option value="paternity">Paternity Leave</option>
+                                </select>
+                            </div>
+
+                            <div class="date-picker">
+                                <div class="form-group">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="text" class="form-control date-input" placeholder="Select date">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">End Date</label>
+                                    <input type="text" class="form-control date-input" placeholder="Select date">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Duration (Days)</label>
+                                <input type="text" class="form-control" value="5" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Reason</label>
+                                <textarea class="form-control" rows="4" placeholder="Enter reason for leave"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Contact During Leave</label>
+                                <input type="text" class="form-control" placeholder="Phone number">
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Submit Request</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Leave Balance -->
+                    <div class="leave-card">
+                        <h3 class="section-title">My Leave Balance</h3>
+
+                        <div class="leave-balance">
+                            <div class="balance-card">
+                                <div class="balance-value">12</div>
+                                <div class="balance-label">Annual Leave</div>
+                            </div>
+                            <div class="balance-card">
+                                <div class="balance-value">10</div>
+                                <div class="balance-label">Sick Leave</div>
+                            </div>
+                            <div class="balance-card">
+                                <div class="balance-value">5</div>
+                                <div class="balance-label">Personal Leave</div>
+                            </div>
+                        </div>
+
+                        <div class="leave-history">
+                            <h3 class="section-title">Recent Leave Requests</h3>
+
+                            <div style="overflow-x: auto;">
+                                <table class="history-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Days</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>May 15-18, 2025</td>
+                                            <td>Annual Leave</td>
+                                            <td>4</td>
+                                            <td><span class="status status-approved">Approved</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Apr 2-3, 2025</td>
+                                            <td>Sick Leave</td>
+                                            <td>2</td>
+                                            <td><span class="status status-approved">Approved</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mar 10, 2025</td>
+                                            <td>Personal Leave</td>
+                                            <td>1</td>
+                                            <td><span class="status status-approved">Approved</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jun 5-9, 2025</td>
+                                            <td>Annual Leave</td>
+                                            <td>5</td>
+                                            <td><span class="status status-pending">Pending</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="startDate">Start Date</label>
-                        <input type="date" id="startDate" name="StartDate" class="form-control" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="endDate">End Date</label>
-                        <input type="date" id="endDate" name="EndDate" class="form-control" required />
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label for="reason">Reason</label>
-                        <textarea id="reason" name="Reason" class="form-control" rows="4" required placeholder="Please provide details for your leave request..."></textarea>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn btn-outline" onclick="window.history.back()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Submit Request</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="card info-card">
-            <div class="card-header">
-                <h2>Leave Policy</h2>
-            </div>
-            <div class="card-content">
-                <div class="info-item">
-                    <div class="info-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                    </div>
-                    <p>Leave requests must be submitted at least 3 days in advance for planned absences.</p>
-                </div>
-                <div class="info-item">
-                    <div class="info-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                    </div>
-                    <p>Medical certificate is required for sick leave exceeding 2 consecutive days.</p>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
-</div>
 
-<style>
-    /* Base & Typography */
-    :root {
-        --primary: #4361ee;
-        --primary-hover: #3a56d4;
-        --success: #2ec4b6;
-        --danger: #e63946;
-        --warning: #ff9f1c;
-        --gray-100: #f8f9fa;
-        --gray-200: #e9ecef;
-        --gray-300: #dee2e6;
-        --gray-400: #ced4da;
-        --gray-500: #adb5bd;
-        --gray-600: #6c757d;
-        --gray-700: #495057;
-        --gray-800: #343a40;
-        --gray-900: #212529;
-        --border-radius: 10px;
-        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Mobile sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.createElement('button');
+            sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            sidebarToggle.style.background = 'none';
+            sidebarToggle.style.border = 'none';
+            sidebarToggle.style.fontSize = '1.25rem';
+            sidebarToggle.style.cursor = 'pointer';
 
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        color: var(--gray-800);
-        background-color: #f5f7fb;
-        line-height: 1.6;
-    }
+            const topNavLeft = document.createElement('div');
+            topNavLeft.appendChild(sidebarToggle);
+            document.querySelector('.top-nav').prepend(topNavLeft);
 
-    /* Layout */
-    .dashboard-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 0 1.5rem;
-    }
+            const sidebar = document.querySelector('.sidebar');
 
-    .dashboard-header {
-        margin-bottom: 2rem;
-    }
-
-        .dashboard-header h1 {
-            margin: 0;
-            font-size: 1.75rem;
-            font-weight: 600;
-        }
-
-    .dashboard-content {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-
-    @@media (min-width: 768px) {
-        .dashboard-content
-
-    {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    }
-
-    .subtitle {
-        color: var(--gray-600);
-        font-size: 1rem;
-        margin-top: 0.5rem;
-    }
-
-    /* Cards */
-    .card {
-        background: white;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-    .card-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--gray-200);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-        .card-header h2 {
-            margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-    .card-content {
-        padding: 1.5rem;
-    }
-
-    /* Form Elements */
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-
-    @@media (min-width: 640px) {
-        .form-grid
-
-    {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    }
-
-    .form-group {
-        margin-bottom: 0;
-    }
-
-    .full-width {
-        grid-column: 1 / -1;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: var(--gray-700);
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--gray-300);
-        border-radius: var(--border-radius);
-        font-size: 1rem;
-        transition: border 0.2s ease, box-shadow 0.2s ease;
-    }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-        }
-
-    .select-wrapper {
-        position: relative;
-    }
-
-        .select-wrapper select {
-            appearance: none;
-            padding-right: 2.5rem;
-        }
-
-    .select-arrow {
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 0;
-        height: 0;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        border-top: 5px solid var(--gray-600);
-        pointer-events: none;
-    }
-
-    textarea.form-control {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-
-    /* Buttons */
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.75rem 1.5rem;
-        border-radius: var(--border-radius);
-        font-weight: 500;
-        font-size: 0.925rem;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-        background-color: var(--primary);
-        color: white;
-        text-decoration: none;
-    }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-    .btn-outline {
-        background-color: transparent;
-        border: 1px solid var(--gray-300);
-        color: var(--gray-700);
-    }
-
-        .btn-outline:hover {
-            background-color: var(--gray-100);
-        }
-
-    /* Info Card */
-    .info-card .card-content {
-        padding-top: 0.5rem;
-    }
-
-    .info-item {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        align-items: flex-start;
-    }
-
-        .info-item:last-child {
-            margin-bottom: 0;
-        }
-
-    .info-icon {
-        color: var(--primary);
-        background-color: rgba(67, 97, 238, 0.1);
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
-        min-width: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .info-item p {
-        margin: 0;
-        font-size: 0.925rem;
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Date validation for leave request
-        const startDateInput = document.getElementById('startDate');
-        const endDateInput = document.getElementById('endDate');
-
-        if (startDateInput && endDateInput) {
-            // Set minimum date to today
-            const today = new Date().toISOString().split('T')[0];
-            startDateInput.setAttribute('min', today);
-
-            // Ensure end date is not before start date
-            startDateInput.addEventListener('change', function() {
-                endDateInput.setAttribute('min', this.value);
-
-                // If end date is before new start date, reset it
-                if (endDateInput.value && endDateInput.value < this.value) {
-                    endDateInput.value = this.value;
-                }
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
             });
-        }
-    });
-</script>
+
+            // Initialize date picker
+            flatpickr(".date-input", {
+                dateFormat: "Y-m-d",
+                minDate: "today"
+            });
+
+            // Calculate days between dates
+            const startDateInput = document.querySelector('input[placeholder="Select date"]:first-of-type');
+            const endDateInput = document.querySelector('input[placeholder="Select date"]:last-of-type');
+            const daysInput = document.querySelector('input[value="5"]');
+
+            function calculateDays() {
+                if (startDateInput.value && endDateInput.value) {
+                    const start = new Date(startDateInput.value);
+                    const end = new Date(endDateInput.value);
+                    const diffTime = Math.abs(end - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    daysInput.value = diffDays;
+                }
+            }
+
+            startDateInput.addEventListener('change', calculateDays);
+            endDateInput.addEventListener('change', calculateDays);
+        });
+    </script>
+</body>
+</html>

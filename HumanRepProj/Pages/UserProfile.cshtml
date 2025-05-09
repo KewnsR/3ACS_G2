@@ -1,348 +1,618 @@
 ﻿@page
 @model HumanRepProj.Pages.UserProfileModel
 @{
-    ViewData["Title"] = "User Profile";
+    ViewData["Title"] = "My Profile";
+    string currentPath = HttpContext.Request.Path;
 }
 
-<div class="dashboard-container">
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <div class="avatar-circle">
-                <span class="initials">@Model.UserName.Substring(0, 1).ToUpper()</span>
-            </div>
-            <h2>@Model.UserName</h2>
-            <p class="user-role">@Model.Role</p>
-        </div>
-        <nav class="sidebar-nav">
-            <ul>
-                <li><a href="#profile-details">Profile Details</a></li>
-                <li><a href="#leave-overview">Leave Overview</a></li>
-                <li><a href="/settings">Settings</a></li>
-                <li><a href="/logout">Logout</a></li>
-            </ul>
-        </nav>
-    </div>
-
-    <div class="main-content">
-        <div class="profile-header">
-            <h1>Welcome, @Model.UserName</h1>
-            <p class="subtitle">Manage your personal information</p>
-        </div>
-
-        <div class="dashboard-content">
-            <div class="card profile-card" id="profile-details">
-                <div class="card-header">
-                    <h2>Profile Details</h2>
-                    <button class="icon-button" id="editProfileBtn" title="Edit Profile">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="card-content">
-                    <div class="info-group">
-                        <span class="info-label">Full Name</span>
-                        <span class="info-value">@Model.FullName</span>
-                    </div>
-                    <div class="info-group">
-                        <span class="info-label">Email</span>
-                        <span class="info-value">@Model.Email</span>
-                    </div>
-                    <div class="info-group">
-                        <span class="info-label">Role</span>
-                        <span class="info-badge">@Model.Role</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card stats-card" id="leave-overview">
-                <div class="card-header">
-                    <h2>Leave Overview</h2>
-                </div>
-                <div class="card-content">
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-value">12</span>
-                            <span class="stat-label">Annual Leave</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">5</span>
-                            <span class="stat-label">Sick Leave</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">3</span>
-                            <span class="stat-label">Personal Leave</span>
-                        </div>
-                    </div>
-                    <a href="/leave-request" class="btn btn-primary mt-4">Request Leave</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-    /* Base & Typography */
-    :root {
-        --primary: #6366f1; /* Primary color */
-        --primary-hover: #5b5fff;
-        --secondary: #9ca3af; /* Secondary color */
-        --success: #22c55e;
-        --danger: #ef4444;
-        --warning: #fbbf24;
-        --gray-100: #f7fafc;
-        --gray-200: #edf2f7;
-        --gray-300: #e2e8f0;
-        --gray-400: #cbd5e0;
-        --gray-500: #a0aec0;
-        --gray-600: #718096;
-        --gray-700: #4a5568;
-        --gray-800: #2d3748;
-        --gray-900: #1a202c;
-        --border-radius: 10px;
-        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        color: var(--gray-800);
-        background-color: #f7fafc;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-    }
-
-    /* Layout */
-    .dashboard-container {
-        display: flex;
-        max-width: 1200px;
-        margin: 2rem auto;
-        gap: 2rem;
-    }
-
-    .sidebar {
-        width: 250px;
-        background-color: var(--gray-100);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        padding: 1rem;
-    }
-
-    .sidebar-header {
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-
-    .avatar-circle {
-        width: 72px;
-        height: 72px;
-        background-color: var(--primary);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.75rem;
-        font-weight: 600;
-    }
-
-    .sidebar h2 {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--gray-800);
-    }
-
-    .user-role {
-        font-size: 0.875rem;
-        color: var(--gray-600);
-        margin-top: 0.25rem;
-    }
-
-    .sidebar-nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .sidebar-nav li {
-        margin-bottom: 0.5rem;
-    }
-
-    .sidebar-nav a {
-        text-decoration: none;
-        color: var(--gray-800);
-        transition: color 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.5rem 1rem;
-        border-radius: var(--border-radius);
-    }
-
-        .sidebar-nav a:hover {
-            background-color: var(--gray-200);
-            color: var(--primary);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HR Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --transition: all 0.3s ease;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --border-radius: 0.5rem;
         }
 
-    .main-content {
-        flex: 1;
-    }
-
-    .profile-header {
-        margin-bottom: 2rem;
-    }
-
-        .profile-header h1 {
+        * {
             margin: 0;
-            font-size: 1.75rem;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #1e293b;
+            font-size: 0.875rem;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar - Fixed to match reference image */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            color: #475569;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100%;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .sidebar-user {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .user-name {
+            font-size: 1.125rem;
             font-weight: 600;
         }
 
-    .subtitle {
-        color: var(--gray-600);
-        font-size: 1rem;
-        margin-top: 0.5rem;
-    }
-
-    /* Cards */
-    .card {
-        background: white;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+        .user-role {
+            color: var(--secondary);
+            font-size: 0.875rem;
         }
 
-    .card-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--gray-200);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+        .nav-title {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+            padding-left: 0.75rem;
+        }
 
-        .card-header h2 {
-            margin: 0;
+        .sidebar-nav ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            color: #475569;
+            text-decoration: none;
+            transition: var(--transition);
+            border-radius: var(--border-radius);
+        }
+
+            .sidebar-nav a.active {
+                background-color: var(--primary-light);
+                color: var(--primary);
+                font-weight: 600;
+            }
+
+            .sidebar-nav a i {
+                width: 20px;
+                text-align: center;
+            }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+            .sidebar-footer a {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem;
+                color: #475569;
+                text-decoration: none;
+                transition: var(--transition);
+                border-radius: var(--border-radius);
+            }
+
+                .sidebar-footer a:hover {
+                    background-color: #f1f5f9;
+                }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            width: 300px;
+        }
+
+            .search-bar input {
+                border: none;
+                outline: none;
+                background: transparent;
+                width: 100%;
+                margin-left: 0.5rem;
+                font-size: 0.875rem;
+            }
+
+        /* Profile Content */
+        .content-container {
+            padding: 2rem;
+            flex-grow: 1;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .profile-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        .profile-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .user-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 600;
+            margin: 0 auto;
+            margin-bottom: 1rem;
+        }
+
+        .user-info {
+            text-align: center;
+        }
+
+        .user-info-name {
             font-size: 1.25rem;
             font-weight: 600;
+            margin-bottom: 0.25rem;
         }
 
-    .card-content {
-        padding: 1.5rem;
-    }
-
-    .info-group {
-        margin-bottom: 1rem;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .info-label {
-        font-size: 0.875rem;
-        color: var(--gray-600);
-        margin-bottom: 0.25rem;
-    }
-
-    .info-value {
-        font-weight: 500;
-    }
-
-    .info-badge {
-        background-color: var(--gray-100);
-        color: var(--primary);
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        display: inline-block;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-    }
-
-    .stat-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 1rem;
-        background-color: var(--gray-100);
-        border-radius: var(--border-radius);
-    }
-
-    .stat-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--primary);
-    }
-
-    .stat-label {
-        font-size: 0.875rem;
-        color: var(--gray-600);
-    }
-
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.75rem 1.5rem;
-        border-radius: var(--border-radius);
-        font-weight: 500;
-        font-size: 0.925rem;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-        background-color: var(--primary);
-        color: white;
-        text-decoration: none;
-    }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
+        .user-info-role {
+            color: var(--secondary);
+            margin-bottom: 1rem;
         }
 
-    .icon-button {
-        background: none;
-        border: none;
-        color: var(--gray-600);
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 50%;
-        transition: background-color 0.2s ease, color 0.2s ease;
-    }
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
 
-        .icon-button:hover {
-            background-color: var(--gray-100);
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+            .detail-item:last-child {
+                border-bottom: none;
+            }
+
+        .detail-icon {
             color: var(--primary);
+            width: 20px;
+            text-align: center;
         }
 
-    .mt-4 {
-        margin-top: 1.5rem;
-    }
-</style>
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Profile edit button
-        const editProfileBtn = document.getElementById('editProfileBtn');
-        if (editProfileBtn) {
-            editProfileBtn.addEventListener('click', function () {
-                alert('Edit profile functionality will be implemented here');
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            background-color: #f8fafc;
+            transition: var(--transition);
+        }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--primary-hover);
+            }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--secondary);
+            border: 1px solid #e2e8f0;
+        }
+
+            .btn-outline:hover {
+                background-color: #f1f5f9;
+            }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .profile-container
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar
+
+        {
+            transform: translateX(-100%);
+            position: fixed;
+            width: 280px;
+            z-index: 1001;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .top-nav {
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .search-bar {
+            width: auto;
+            flex-grow: 1;
+            margin: 0 1rem;
+        }
+
+        .content-container {
+            padding: 1rem;
+        }
+
+        .profile-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">HR Portal</div>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-name">John Doe</div>
+                <div class="user-role">Employee</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">Main Menu</p>
+                <ul>
+                    <li>
+                        <a href="/UserDashboard">
+                            <i class="fas fa-th-large"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/UserProfile" class="active">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/UserLeaveRequest">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Leave Request</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/UserLoanRequest">
+                            <i class="fas fa-hand-holding-usd"></i>
+                            <span>Loan Request</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="nav-title">Others</p>
+                <ul>
+                    <li>
+                        <a href="/UserHelp">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Help</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/UserLogin?logout=true">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Profile Content -->
+            <div class="content-container">
+                <div class="profile-header">
+                    <h1 class="profile-title">My Profile</h1>
+                </div>
+
+                <div class="profile-container">
+                    <!-- Profile Sidebar -->
+                    <div class="profile-sidebar">
+                        <div class="profile-card">
+                            <div class="user-avatar">
+                                LBJ
+                            </div>
+                            <div class="user-info">
+                                <div class="user-info-name">Lebron James</div>
+                                <div class="user-info-role">Employee</div>
+                            </div>
+                            <div class="user-details">
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-envelope"></i></div>
+                                    <div>lebron.james@company.com</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-phone"></i></div>
+                                    <div>(123) 456-7890</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                    <div>Los Angeles, USA</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-briefcase"></i></div>
+                                    <div>IT Department</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-card">
+                            <h3 class="section-title">Quick Links</h3>
+                            <div class="user-details">
+                                <a href="#" class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-file-alt"></i></div>
+                                    <div>My Documents</div>
+                                </a>
+                                <a href="#" class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-key"></i></div>
+                                    <div>Change Password</div>
+                                </a>
+                                <a href="#" class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-bell"></i></div>
+                                    <div>Notification Settings</div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Main Content -->
+                    <div class="profile-card">
+                        <h3 class="section-title">Personal Information</h3>
+                        <form>
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" value="John Doe">
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" value="john.doe@company.com">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" value="(123) 456-7890">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" rows="3">123 Main Street, New York, NY 10001</textarea>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label">Department</label>
+                                    <input type="text" class="form-control" value="IT Department">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Position</label>
+                                    <input type="text" class="form-control" value="Software Developer">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label">Employee ID</label>
+                                    <input type="text" class="form-control" value="EMP-10025" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Join Date</label>
+                                    <input type="text" class="form-control" value="January 15, 2020" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.createElement('button');
+            sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            sidebarToggle.style.background = 'none';
+            sidebarToggle.style.border = 'none';
+            sidebarToggle.style.fontSize = '1.25rem';
+            sidebarToggle.style.cursor = 'pointer';
+
+            const topNavLeft = document.createElement('div');
+            topNavLeft.appendChild(sidebarToggle);
+            document.querySelector('.top-nav').prepend(topNavLeft);
+
+            const sidebar = document.querySelector('.sidebar');
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
             });
-        }
-    });
-</script>
+        });
+    </script>
+</body>
+</html>

@@ -2,58 +2,494 @@
 @model HumanRepProj.Pages.UserLoanRequestModel
 @{
     ViewData["Title"] = "Loan Request";
+    string currentPath = HttpContext.Request.Path;
 }
 
-<div class="loan-container">
-    <h1>Loan Request</h1>
-    <p>Submit your loan request below.</p>
-
-    <form method="post" class="loan-form">
-        <div class="form-group">
-            <label for="loanAmount">Loan Amount</label>
-            <input type="number" id="loanAmount" name="LoanAmount" class="form-control" required />
-        </div>
-
-        <div class="form-group">
-            <label for="loanReason">Reason</label>
-            <textarea id="loanReason" name="LoanReason" class="form-control" rows="4" required></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Submit Request</button>
-    </form>
-</div>
-
-<style>
-    .loan-container {
-        max-width: 800px;
-        margin: 2rem auto;
-        background: white;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 5px;
-    }
-
-    .btn-primary {
-        background-color: #4f46e5;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-        .btn-primary:hover {
-            background-color: #4338ca;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HR Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --transition: all 0.3s ease;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --border-radius: 0.5rem;
         }
-</style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #1e293b;
+            font-size: 0.875rem;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Fixed Sidebar UI */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            color: #475569;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100%;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .sidebar-user {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .user-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .user-role {
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+
+        .nav-title {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+            padding-left: 0.75rem;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            color: #475569;
+            text-decoration: none;
+            transition: var(--transition);
+            border-radius: var(--border-radius);
+        }
+
+            .sidebar-nav a.active {
+                background-color: var(--primary-light);
+                color: var(--primary);
+                font-weight: 600;
+            }
+
+            .sidebar-nav a i {
+                width: 20px;
+                text-align: center;
+            }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+            .sidebar-footer a {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem;
+                color: #475569;
+                text-decoration: none;
+                transition: var(--transition);
+                border-radius: var(--border-radius);
+            }
+
+                .sidebar-footer a:hover {
+                    background-color: #f1f5f9;
+                }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            width: 300px;
+        }
+
+            .search-bar input {
+                border: none;
+                outline: none;
+                background: transparent;
+                width: 100%;
+                margin-left: 0.5rem;
+                font-size: 0.875rem;
+            }
+
+        /* Loan Request Content */
+        .content-container {
+            padding: 2rem;
+            flex-grow: 1;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .loan-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @@media (max-width: 1024px) {
+            .loan-container
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        }
+
+        .loan-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        /* ... (rest of your existing loan request styles) ... */
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .sidebar
+
+        {
+            transform: translateX(-100%);
+            position: fixed;
+            width: 280px;
+            z-index: 1001;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .top-nav {
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .search-bar {
+            width: auto;
+            flex-grow: 1;
+            margin: 0 1rem;
+        }
+
+        .content-container {
+            padding: 1rem;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Fixed Sidebar UI -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">HR Portal</div>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-name">John Doe</div>
+                <div class="user-role">Employee</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">Main Menu</p>
+                <ul>
+                    <li>
+                        <a href="/UserDashboard">
+                            <i class="fas fa-th-large"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/UserProfile">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/UserLeaveRequest">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Leave Request</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/UserLoanRequest" class="active">
+                            <i class="fas fa-hand-holding-usd"></i>
+                            <span>Loan Request</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="nav-title">Others</p>
+                <ul>
+                    <li>
+                        <a href="/UserHelp">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Help</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/UserLogin?logout=true">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Page Content -->
+            <div class="content-container">
+                <div class="page-header">
+                    <h1 class="page-title">Loan Request</h1>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Request
+                    </button>
+                </div>
+
+                <div class="loan-container">
+                    <!-- Loan Request Form -->
+                    <div class="loan-card">
+                        <h3 class="section-title">Request Loan</h3>
+
+                        <form>
+                            <div class="form-group">
+                                <label class="form-label">Loan Type</label>
+                                <select class="form-select">
+                                    <option value="">Select loan type</option>
+                                    <option value="emergency">Emergency Loan</option>
+                                    <option value="education">Education Loan</option>
+                                    <option value="housing">Housing Loan</option>
+                                    <option value="vehicle">Vehicle Loan</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group amount-input">
+                                <label class="form-label">Loan Amount</label>
+                                <span>$</span>
+                                <input type="number" class="form-control" placeholder="Enter amount">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Installment Period</label>
+                                <select class="form-select">
+                                    <option value="">Select period</option>
+                                    <option value="3">3 Months</option>
+                                    <option value="6">6 Months</option>
+                                    <option value="12">12 Months</option>
+                                    <option value="24">24 Months</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Reason</label>
+                                <textarea class="form-control" rows="4" placeholder="Enter reason for loan"></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Submit Request</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Loan Eligibility -->
+                    <div class="loan-card">
+                        <div class="eligibility-card">
+                            <div class="eligibility-amount">$5,000</div>
+                            <div class="eligibility-label">Your maximum loan eligibility</div>
+
+                            <div class="progress-container">
+                                <div class="progress-labels">
+                                    <span>$0</span>
+                                    <span>$10,000</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="loan-history">
+                            <h3 class="section-title">Recent Loan Requests</h3>
+
+                            <div style="overflow-x: auto;">
+                                <table class="history-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>May 15, 2025</td>
+                                            <td>Emergency</td>
+                                            <td>$1,200</td>
+                                            <td><span class="status status-approved">Approved</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mar 10, 2025</td>
+                                            <td>Education</td>
+                                            <td>$3,500</td>
+                                            <td><span class="status status-approved">Approved</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jun 5, 2025</td>
+                                            <td>Housing</td>
+                                            <td>$4,000</td>
+                                            <td><span class="status status-pending">Pending</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.createElement('button');
+            sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            sidebarToggle.style.background = 'none';
+            sidebarToggle.style.border = 'none';
+            sidebarToggle.style.fontSize = '1.25rem';
+            sidebarToggle.style.cursor = 'pointer';
+
+            const topNavLeft = document.createElement('div');
+            topNavLeft.appendChild(sidebarToggle);
+            document.querySelector('.top-nav').prepend(topNavLeft);
+
+            const sidebar = document.querySelector('.sidebar');
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+            });
+
+            // Format currency input
+            const amountInput = document.querySelector('.amount-input input');
+            amountInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                e.target.value = value ? parseInt(value, 10) : '';
+            });
+        });
+    </script>
+</body>
+</html>

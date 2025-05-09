@@ -51,11 +51,10 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
+        /* Consistent Sidebar UI */
         .sidebar {
             width: var(--sidebar-width);
             background-color: white;
-            box-shadow: var(--shadow);
             color: #475569;
             flex-shrink: 0;
             display: flex;
@@ -69,19 +68,20 @@
             overflow-x: hidden;
             overflow-y: auto;
             padding: 1.5rem;
+            border-right: 1px solid #e2e8f0;
         }
 
         .sidebar-header {
             margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
             font-size: 1.25rem;
             font-weight: 700;
             color: var(--dark);
+            text-align: center;
         }
 
         .sidebar-user {
@@ -91,6 +91,7 @@
             margin-bottom: 2rem;
             padding-bottom: 2rem;
             border-bottom: 1px solid #e2e8f0;
+            text-align: center;
         }
 
         .user-name {
@@ -110,6 +111,7 @@
             color: var(--secondary);
             margin-bottom: 1rem;
             font-weight: 500;
+            padding-left: 0.75rem;
         }
 
         .sidebar-nav ul {
@@ -138,11 +140,31 @@
                 font-weight: 600;
             }
 
+            .sidebar-nav a i {
+                width: 20px;
+                text-align: center;
+            }
+
         .sidebar-footer {
             margin-top: auto;
             padding-top: 1rem;
             border-top: 1px solid #e2e8f0;
         }
+
+            .sidebar-footer a {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem;
+                color: #475569;
+                text-decoration: none;
+                transition: var(--transition);
+                border-radius: var(--border-radius);
+            }
+
+                .sidebar-footer a:hover {
+                    background-color: #f1f5f9;
+                }
 
         /* Main Content */
         .main-content {
@@ -190,7 +212,7 @@
             flex-grow: 1;
         }
 
-        /* Dashboard */
+        /* Dashboard Specific Styles */
         .dashboard-header {
             margin-bottom: 2rem;
         }
@@ -267,50 +289,135 @@
             font-style: italic;
         }
 
+        /* Logout Popup Styles */
+        .logout-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+            .logout-popup.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+        .logout-popup-content {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 320px;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .logout-popup.active .logout-popup-content {
+            transform: translateY(0);
+        }
+
+        .logout-popup-body {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+            .logout-popup-body p {
+                margin: 0 0 1.5rem 0;
+                font-size: 1rem;
+                color: #333;
+            }
+
+        .logout-popup-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            min-width: 80px;
+        }
+
+        .btn-cancel {
+            background-color: #ff5252;
+            color: white;
+        }
+
+            .btn-cancel:hover {
+                background-color: #ff1a1a;
+            }
+
+        .btn-confirm {
+            background-color: #4caf50;
+            color: white;
+        }
+
+            .btn-confirm:hover {
+                background-color: #45a049;
+            }
+
         /* Responsive */
         @@media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                position: fixed;
-                width: 280px;
-                z-index: 1001;
-            }
+            .sidebar
 
-                .sidebar.open {
-                    transform: translateX(0);
-                }
+        {
+            transform: translateX(-100%);
+            position: fixed;
+            width: 280px;
+            z-index: 1001;
+        }
 
-            .main-content {
-                margin-left: 0;
-            }
+        .sidebar.open {
+            transform: translateX(0);
+        }
 
-            .top-nav {
-                justify-content: space-between;
-                padding: 0 1rem;
-            }
+        .main-content {
+            margin-left: 0;
+        }
 
-            .search-bar {
-                width: auto;
-                flex-grow: 1;
-                margin: 0 1rem;
-            }
+        .top-nav {
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
 
-            .content-container {
-                padding: 1rem;
-            }
+        .search-bar {
+            width: auto;
+            flex-grow: 1;
+            margin: 0 1rem;
+        }
+
+        .content-container {
+            padding: 1rem;
+        }
+
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Consistent Sidebar UI -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="brand">HR Portal</div>
             </div>
 
             <div class="sidebar-user">
-                <div class="user-name">John Doe</div>
+                <div class="user-name">Lebron James</div>
                 <div class="user-role">Employee</div>
             </div>
 
@@ -318,25 +425,25 @@
                 <p class="nav-title">Main Menu</p>
                 <ul>
                     <li>
-                        <a href="/UserDashboard" class="@(currentPath == "/UserDashboard" ? "active" : "")">
+                        <a href="/UserDashboard" class="active">
                             <i class="fas fa-th-large"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/UserProfile" class="@(currentPath == "/UserProfile" ? "active" : "")">
+                        <a href="/UserProfile">
                             <i class="fas fa-user"></i>
                             <span>My Profile</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/UserLeaveRequest" class="@(currentPath == "/UserLeaveRequest" ? "active" : "")">
+                        <a href="/UserLeaveRequest">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Leave Request</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/UserLoanRequest" class="@(currentPath == "/UserLoanRequest" ? "active" : "")">
+                        <a href="/UserLoanRequest">
                             <i class="fas fa-hand-holding-usd"></i>
                             <span>Loan Request</span>
                         </a>
@@ -355,7 +462,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                <a href="/UserLogin?logout=true">
+                <a href="/UserLogin?logout=true" id="logoutBtn">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>
@@ -418,6 +525,18 @@
         </main>
     </div>
 
+    <div id="logoutPopup" class="logout-popup">
+        <div class="logout-popup-content">
+            <div class="logout-popup-body">
+                <p>Are you sure you want to log out?</p>
+                <div class="logout-popup-buttons">
+                    <button id="confirmLogout" class="btn btn-confirm">Yes</button>
+                    <button id="cancelLogout" class="btn btn-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Mobile sidebar toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -436,6 +555,45 @@
 
             sidebarToggle.addEventListener('click', function() {
                 sidebar.classList.toggle('open');
+            });
+
+            // Logout popup functionality
+            const logoutButton = document.getElementById('logoutBtn');
+            const logoutPopup = document.getElementById('logoutPopup');
+            const cancelLogout = document.getElementById('cancelLogout');
+            const confirmLogout = document.getElementById('confirmLogout');
+
+            // Store the original logout URL
+            const logoutUrl = logoutButton.getAttribute('href');
+
+            // Prevent default navigation and show popup instead
+            logoutButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                logoutPopup.classList.add('active');
+            });
+
+            // Close popup when clicking the cancel button
+            cancelLogout.addEventListener('click', function() {
+                logoutPopup.classList.remove('active');
+            });
+
+            // Confirm logout and redirect
+            confirmLogout.addEventListener('click', function() {
+                window.location.href = logoutUrl;
+            });
+
+            // Close popup when clicking outside
+            logoutPopup.addEventListener('click', function(e) {
+                if (e.target === logoutPopup) {
+                    logoutPopup.classList.remove('active');
+                }
+            });
+
+            // Close popup when pressing Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && logoutPopup.classList.contains('active')) {
+                    logoutPopup.classList.remove('active');
+                }
             });
         });
     </script>
