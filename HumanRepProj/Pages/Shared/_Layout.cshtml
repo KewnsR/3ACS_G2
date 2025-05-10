@@ -8,7 +8,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>@ViewData["Title"] - HRIS</title>
 
     <!-- Bootstrap CSS -->
@@ -181,6 +181,7 @@
     </style>
 </head>
 <body>
+    @Html.AntiForgeryToken()
     @if (!hideSidebar)
     {
     <!-- Fixed Sidebar -->
@@ -199,9 +200,6 @@
                 </a>
                 <a href="/Attendance" class="menu-item" id="attendance-btn">
                     <i class="fas fa-clock"></i> Attendance
-                </a>
-                <a href="/Payroll" class="menu-item" id="payroll-btn">
-                    <i class="fas fa-dollar-sign"></i> Payroll
                 </a>
                 <a href="/Leave" class="menu-item" id="leave-btn">
                     <i class="fas fa-calendar-alt"></i> Leave

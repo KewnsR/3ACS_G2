@@ -1,3 +1,4 @@
+using HumanRepProj.Controllers;
 using HumanRepProj.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,11 +15,14 @@ namespace HumanRepProj.Data
         {
         }
 
-        // DbSets
+        // DbSetsmodelBuilder.Entity<LoanHistory>().ToTable("LoanHistory");
+        
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
+        public DbSet<Loans> Loans { get; set; }
+        public DbSet<FaceData> FaceData { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +32,19 @@ namespace HumanRepProj.Data
             ConfigureDepartment(modelBuilder);
             ConfigureEmployee(modelBuilder);
             ConfigureAttendanceRecord(modelBuilder);
+
+            modelBuilder.Entity<Loans>().ToTable("Loans");
+
+
+
+            modelBuilder.Entity<Loans>()
+        .Property(l => l.LoanAmount)
+        .HasColumnType("decimal(18,2)");            
+
+            modelBuilder.Entity<Loans>()
+         .Property(l => l.PaidLoan)
+         .HasColumnType("decimal(18,2)");
+
         }
 
         private void ConfigureApplicationUser(ModelBuilder modelBuilder)

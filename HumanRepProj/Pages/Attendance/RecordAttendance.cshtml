@@ -6,126 +6,572 @@
 }
 
 @section Styles {
-<style>
-    .form-control-sm { font-size: 0.875rem; }
-    .card-body { padding: 1rem; }
-    .video-container {
-        max-width: 640px;
-        margin: 0 auto;
-        text-align: center;
-    }
-    #status {
-        font-weight: bold;
-        margin-top: 1rem;
-    }
-</style>
+    <style>
+        .attendance-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .video-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: #f8f9fa;
+            margin-bottom: 1.5rem;
+        }
+
+        #webcam {
+            width: 100%;
+            max-height: 450px;
+            object-fit: cover;
+            display: block;
+        }
+
+        #canvas-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .btn-capture {
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+            .btn-capture:disabled {
+                opacity: 0.6;
+            }
+
+            .btn-capture:not(:disabled):hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
+
+        .scan-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 230px;
+            height: 230px;
+            border: 2px dashed rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scanning-animation {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #2196F3, transparent);
+            position: absolute;
+            animation: scan 2s infinite linear;
+        }
+
+        @@keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            50% {
+                top: 100%;
+            }
+
+            100% {
+                top: 0;
+            }
+        }
+
+        .status-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        #status {
+            font-size: 1.1rem;
+            margin: 0;
+            min-height: 1.5rem;
+        }
+
+        .status-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .modal-custom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content-custom {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 90%;
+            width: 450px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .progress-container {
+            height: 6px;
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #2196F3;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .employee-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: left;
+            display: none;
+        }
+    </style>
 }
 
-<div class="scrollable-container">
+<div class="attendance-container">
     <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2 mb-0">Record Attendance</h1>
     </div>
 
     <div class="video-container mt-4">
-        <video id="webcam" autoplay playsinline width="100%" style="max-height:400px;"></video>
+        <video id="webcam" autoplay playsinline muted></video>
         <canvas id="canvas" style="display:none;"></canvas>
-        
-        <div class="mt-3">
-            <button id="captureBtn" class="btn btn-primary" disabled>Capture Face</button>
-            <p id="status" class="text-muted mt-2"></p>
+        <canvas id="canvas-overlay" style="display:block;"></canvas>
+        <div class="scan-area" id="scanArea">
+            <div class="scanning-animation"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="captureBtn" class="btn btn-primary btn-capture" disabled>
+            <i class="fas fa-camera mr-2"></i> Verify Face
+        </button>
+
+        <div class="status-container mt-3">
+            <p id="status" class="text-muted">Waiting for QR code scan...</p>
+        </div>
+
+        <div class="employee-info mt-3" id="employeeInfo">
+            <h5>Employee Information</h5>
+            <div id="employeeDetails"></div>
         </div>
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal-custom" id="instructionModal" style="display:none;">
+    <div class="modal-content-custom">
+        <span id="modalIcon" class="modal-icon">🔍</span>
+        <h3 id="modalTitle" class="modal-title">Scan QR Code</h3>
+        <p id="modalMessage">Please position your employee QR code in front of the camera.</p>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <button id="modalActionBtn" class="btn btn-primary btn-lg mt-3">Start Scanning</button>
+    </div>
+</div>
+
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/jsqr @@1.4.0/dist/jsQR.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js "></script>
+    <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const canvasOverlay = document.getElementById('canvas-overlay');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const overlayCtx = canvasOverlay.getContext('2d');
+        const captureBtn = document.getElementById('captureBtn');
+        const statusText = document.getElementById('status');
+        const scanArea = document.getElementById('scanArea');
+        const employeeInfo = document.getElementById('employeeInfo');
+        const employeeDetails = document.getElementById('employeeDetails');
 
-<script>
-const video = document.getElementById('webcam');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const captureBtn = document.getElementById('captureBtn');
-const statusText = document.getElementById('status');
+        // Modal elements
+        const modal = document.getElementById('instructionModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalActionBtn = document.getElementById('modalActionBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
 
-let employeeId = null;
+        let employeeId = null;
+        let scanning = true;
+        let qrScanned = false;
+        let processingAttendance = false;
 
-// Initialize Webcam
-navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-    .then(stream => {
-        video.srcObject = stream;
-    })
-    .catch(err => {
-        alert("Camera access denied or not supported.");
-        console.error(err);
-    });
-
-// QR Scanning Loop
-function scanQR() {
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-        if (code) {
-            employeeId = code.data;
-            statusText.innerText = `✅ QR Scanned: Employee ID ${employeeId}`;
-            captureBtn.disabled = false;
+        // Start Camera
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" }
+            }).catch(() => navigator.mediaDevices.getUserMedia({ video: true }))
+              .then(stream => {
+                  video.srcObject = stream;
+                  video.onloadedmetadata = () => {
+                      video.play();
+                      // Set canvas sizes after video loads
+                      setTimeout(() => {
+                          resizeCanvases();
+                          requestAnimationFrame(scanQR);
+                      }, 500);
+                  };
+              })
+              .catch(err => {
+                  showStatus("❌ Camera access denied or not supported.", "text-danger");
+                  console.error(err);
+              });
         }
-    }
-    requestAnimationFrame(scanQR);
-}
 
-video.addEventListener('play', () => {
-    requestAnimationFrame(scanQR);
-});
-
-// Capture Face & Send to YOLO API
-captureBtn.addEventListener('click', async () => {
-    statusText.innerText = "📸 Capturing face...";
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const image = canvas.toDataURL('image/jpeg', 0.8); // Base64 image
-
-    try {
-        // Step 1: Verify face using YOLO backend
-        const response = await axios.post('/api/attendance/verify-face', {
-            employeeId,
-            image
-        });
-
-        if (response.data.match) {
-            statusText.innerText = "👤 Face verified!";
-            // Step 2: Log attendance
-            await logAttendance(employeeId);
-        } else {
-            statusText.innerText = "❌ Face does not match employee.";
+        function resizeCanvases() {
+            const videoRect = video.getBoundingClientRect();
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvasOverlay.width = videoRect.width;
+            canvasOverlay.height = videoRect.height;
         }
-    } catch (err) {
-        statusText.innerText = "⚠️ Error verifying face.";
-        console.error(err);
-    }
-});
 
-// Log attendance to database
-async function logAttendance(empId) {
-    try {
-        const res = await fetch('/api/attendance/log', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ employeeId: empId })
-        });
+        // QR Scanning Loop
+        let lastDetectTime = 0;
 
-        if (res.ok) {
-            statusText.innerText = "✅ Attendance recorded successfully!";
+        function scanQR() {
+            if (!scanning || processingAttendance) return;
+
+            if (video.videoWidth === 0 || video.videoHeight === 0) {
+                requestAnimationFrame(scanQR);
+                return;
+            }
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (code) {
+                // Clear overlay and draw new QR box
+                overlayCtx.clearRect(0, 0, canvasOverlay.width, canvasOverlay.height);
+                drawQRBoundingBox(code.location);
+
+                employeeId = code.data;
+                showStatus("✅ QR Scanned: Employee ID " + employeeId, "text-success");
+                scanning = false;
+                qrScanned = true;
+                scanArea.style.display = "none";
+
+                // Show face instruction
+                showFaceInstructionModal();
+                captureBtn.disabled = false;
+
+                // Fetch employee info (simulated)
+                fetchEmployeeInfo(employeeId);
+
+                return;
+            }
+
+            let now = Date.now();
+            if (now - lastDetectTime > 300) {
+                detectFacesAndDraw();
+                lastDetectTime = now;
+            }
+
+            requestAnimationFrame(scanQR);
+        }
+
+        function drawQRBoundingBox(location) {
+            // Convert coordinates to match overlay canvas
+            const scaleX = canvasOverlay.width / canvas.width;
+            const scaleY = canvasOverlay.height / canvas.height;
+
+            overlayCtx.beginPath();
+            overlayCtx.moveTo(location.topLeftCorner.x * scaleX, location.topLeftCorner.y * scaleY);
+            overlayCtx.lineTo(location.topRightCorner.x * scaleX, location.topRightCorner.y * scaleY);
+            overlayCtx.lineTo(location.bottomRightCorner.x * scaleX, location.bottomRightCorner.y * scaleY);
+            overlayCtx.lineTo(location.bottomLeftCorner.x * scaleX, location.bottomLeftCorner.y * scaleY);
+            overlayCtx.closePath();
+            overlayCtx.lineWidth = 4;
+            overlayCtx.strokeStyle = "#4CAF50";
+            overlayCtx.stroke();
+
+            // Fill with semi-transparent green
+            overlayCtx.fillStyle = "rgba(76, 175, 80, 0.2)";
+            overlayCtx.fill();
+        }
+
+        function showStartModal() {
+            modalIcon.textContent = "🔍";
+            modalTitle.textContent = "Scan QR Code";
+            modalMessage.textContent = "Please position your employee QR code in front of the camera.";
+            modalActionBtn.textContent = "Start Scanning";
+            progressContainer.style.display = "none";
+            modal.style.display = "flex";
+
+            modalActionBtn.onclick = () => {
+                modal.style.display = "none";
+                scanArea.style.display = "flex";
+            };
+        }
+
+        function showFaceInstructionModal() {
+            modalIcon.textContent = "👤";
+            modalTitle.textContent = "Face Verification";
+            modalMessage.textContent = "Please position your face in front of the camera and click 'Verify Face' button.";
+            modalActionBtn.textContent = "Got it";
+            progressContainer.style.display = "none";
+            modal.style.display = "flex";
+
+            modalActionBtn.onclick = () => {
+                modal.style.display = "none";
+            };
+        }
+
+        function showProcessingModal() {
+            modalIcon.textContent = "⏳";
+            modalTitle.textContent = "Processing";
+            modalMessage.textContent = "Verifying your identity...";
+            modalActionBtn.style.display = "none";
+            progressContainer.style.display = "block";
+            progressBar.style.width = "0%";
+            modal.style.display = "flex";
+
+            // Animate progress bar
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                progressBar.style.width = progress + "%";
+                if (progress >= 100) clearInterval(interval);
+            }, 50);
+        }
+
+        function showSuccessModal() {
+            modalIcon.textContent = "✅";
+            modalTitle.textContent = "Success!";
+            modalMessage.textContent = "Your attendance has been recorded successfully.";
+            modalActionBtn.textContent = "Done";
+            modalActionBtn.style.display = "block";
+            progressContainer.style.display = "none";
+            modal.style.display = "flex";
+
+            modalActionBtn.onclick = () => {
+                modal.style.display = "none";
+                resetScanner();
+            };
+        }
+
+        function showErrorModal(message) {
+            modalIcon.textContent = "❌";
+            modalTitle.textContent = "Error";
+            modalMessage.textContent = message || "There was an error processing your request.";
+            modalActionBtn.textContent = "Try Again";
+            modalActionBtn.style.display = "block";
+            progressContainer.style.display = "none";
+            modal.style.display = "flex";
+
+            modalActionBtn.onclick = () => {
+                modal.style.display = "none";
+                resetScanner();
+            };
+        }
+
+        function showStatus(message, className = "text-muted") {
+            statusText.className = className;
+            statusText.innerHTML = message;
+        }
+
+        async function detectFacesAndDraw() {
+            const imageDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+
+            try {
+                const response = await fetch('/api/attendance/detect-face', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(imageDataUrl)
+                });
+
+                const result = await response.json();
+
+                // Clear the overlay canvas
+                overlayCtx.clearRect(0, 0, canvasOverlay.width, canvasOverlay.height);
+
+                if (result.success && result.faces.length > 0) {
+                    const scaleX = canvasOverlay.width / canvas.width;
+                    const scaleY = canvasOverlay.height / canvas.height;
+
+                    result.faces.forEach(face => {
+                        // Draw face outline
+                        overlayCtx.strokeStyle = "#2196F3";
+                        overlayCtx.lineWidth = 3;
+                        overlayCtx.strokeRect(
+                            face.x * scaleX,
+                            face.y * scaleY,
+                            face.width * scaleX,
+                            face.height * scaleY
+                        );
+
+                        // Draw face highlight
+                        overlayCtx.fillStyle = "rgba(33, 150, 243, 0.15)";
+                        overlayCtx.fillRect(
+                            face.x * scaleX,
+                            face.y * scaleY,
+                            face.width * scaleX,
+                            face.height * scaleY
+                        );
+                    });
+                }
+            } catch (e) {
+                console.error("Face detection failed", e);
+            }
+        }
+
+        function fetchEmployeeInfo(empId) {
+            // Simulated employee data fetch
+            // In a real app, this would be an API call
+            employeeInfo.style.display = "block";
+            employeeDetails.innerHTML = `
+                <div class="mb-2"><strong>ID:</strong> ${empId}</div>
+                <div class="mb-2"><strong>Status:</strong> <span class="badge bg-warning text-dark">Verification Pending</span></div>
+            `;
+        }
+
+        function updateEmployeeInfoSuccess() {
+            employeeDetails.innerHTML = `
+                <div class="mb-2"><strong>ID:</strong> ${employeeId}</div>
+                <div class="mb-2"><strong>Status:</strong> <span class="badge bg-success">Verified</span></div>
+                <div class="mb-2"><strong>Check-in Time:</strong> ${new Date().toLocaleTimeString()}</div>
+                <div class="mb-2"><strong>Date:</strong> ${new Date().toLocaleDateString()}</div>
+            `;
+        }
+
+        // Capture Face & Send to Verification API
+        captureBtn.addEventListener('click', async () => {
+            if (processingAttendance) return;
+
+            processingAttendance = true;
             captureBtn.disabled = true;
-        } else {
-            statusText.innerText = "❌ Failed to record attendance.";
+            showProcessingModal();
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const image = canvas.toDataURL('image/jpeg', 0.8);
+
+            try {
+                const response = await axios.post('/api/attendance/verify-face', {
+                    EmployeeId: employeeId,
+                    Image: image
+                });
+
+                // Simulate longer processing time for better UX
+                setTimeout(async () => {
+                    if (response.data.match) {
+                        // Record attendance if face matches
+                        try {
+                            const attendanceRes = await fetch('/api/attendance/log', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ employeeId: employeeId })
+                            });
+
+                            if (attendanceRes.ok) {
+                                showSuccessModal();
+                                showStatus("✅ Identity verified. Attendance recorded!", "text-success");
+                                updateEmployeeInfoSuccess();
+                            } else {
+                                showErrorModal("Failed to record attendance.");
+                                showStatus("❌ Failed to record attendance.", "text-danger");
+                                processingAttendance = false;
+                                captureBtn.disabled = false;
+                            }
+                        } catch (err) {
+                            showErrorModal("Network error.");
+                            showStatus("⚠️ Network error.", "text-danger");
+                            processingAttendance = false;
+                            captureBtn.disabled = false;
+                        }
+                    } else {
+                        showErrorModal("Face verification failed. Please try again.");
+                        showStatus("❌ Face does not match employee record.", "text-danger");
+                        processingAttendance = false;
+                        captureBtn.disabled = false;
+                    }
+                }, 1500);
+            } catch (err) {
+                showErrorModal("Error verifying face.");
+                showStatus("⚠️ Error verifying face.", "text-danger");
+                processingAttendance = false;
+                captureBtn.disabled = false;
+            }
+        });
+
+        function resetScanner() {
+            employeeId = null;
+            scanning = true;
+            qrScanned = false;
+            processingAttendance = false;
+            captureBtn.disabled = true;
+            showStatus("Waiting for QR code scan...");
+            scanArea.style.display = "flex";
+            employeeInfo.style.display = "none";
+            overlayCtx.clearRect(0, 0, canvasOverlay.width, canvasOverlay.height);
+            requestAnimationFrame(scanQR);
         }
-    } catch (err) {
-        statusText.innerText = "⚠️ Network error.";
-    }
-}
-</script>
+
+        // Handle window resize
+        window.addEventListener('resize', resizeCanvases);
+
+        // Start everything
+        window.onload = () => {
+            startCamera();
+            showStartModal();
+        };
+    </script>
 }

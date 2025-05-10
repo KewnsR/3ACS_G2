@@ -1,16 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
-using HumanRepProj.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.ML.OnnxRuntime;
+using HumanRepProj.Data;
 using HumanRepProj.HealthChecks;
+using HumanRepProj.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddControllers();
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevelopmentCors", policy =>
+    {
+        policy.WithOrigins("http://localhost:7036")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+// Session
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -18,7 +32,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Configure authentication
+// Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -29,34 +43,42 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;
     });
 
-// Enhanced database configuration
+// Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlOptions =>
         {
-            sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(30),
-                errorNumbersToAdd: null);
-            sqlOptions.CommandTimeout(60); // 60 seconds command timeout
+            sqlOptions.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+            sqlOptions.CommandTimeout(60);
         });
-    options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
 });
 
-// Add health checks
+// Health checks
 builder.Services.AddHealthChecks()
-    .AddCheck<DbContextHealthCheck<ApplicationDbContext>>(
-        "database_check",
-        HealthStatus.Unhealthy,
-        new[] { "ready" });
+    .AddCheck<DbContextHealthCheck<ApplicationDbContext>>("database_check", HealthStatus.Unhealthy, new[] { "ready" });
+
+// ONNX Runtime - YOLOv8n-face
+var env = builder.Environment;
+var wwwrootPath = env.WebRootPath;
+var modelPath = Path.Combine(wwwrootPath, "models", "yolov8n-face.onnx");
+
+if (!File.Exists(modelPath))
+    throw new FileNotFoundException($"Model file not found at {modelPath}");
+
+builder.Services.AddSingleton<InferenceSession>(provider =>
+    new InferenceSession(modelPath, new Microsoft.ML.OnnxRuntime.SessionOptions
+    {
+        ExecutionMode = Microsoft.ML.OnnxRuntime.ExecutionMode.ORT_SEQUENTIAL
+    }));
+
+// Face Recognition Service
+builder.Services.AddScoped<FaceRecognitionService>();
+builder.Services.AddSingleton<IOnnxFaceDetectionService, OnnxFaceDetectionService>();
 
 var app = builder.Build();
 
-// Database connection verification
-await VerifyDatabaseConnection(app.Services, app.Logger);
-
-// Configure the HTTP request pipeline.
+// Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -68,75 +90,46 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-
-// Proper ordering is important here
+app.UseStaticFiles();     // ✅ Serves static files (e.g., ONNX models in `wwwroot/`)
+app.UseRouting();         // ✅ Routes HTTP requests to endpoints
+app.UseCors("DevelopmentCors");
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseHealthChecks("/health");
 
+app.MapControllers();
 app.MapRazorPages();
-
-// Redirect root to Login page
 app.MapGet("/", () => Results.Redirect("/Login"));
 
-app.Run();
+// Verify database connection
+try
+{
+    await VerifyDatabaseConnection(app.Services, app.Logger);
+}
+catch (Exception ex)
+{
+    app.Logger.LogCritical(ex, "Database verification failed");
+    throw;
+}
+
+await app.RunAsync();
 
 async Task VerifyDatabaseConnection(IServiceProvider services, ILogger logger)
 {
     using var scope = services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
     try
     {
         logger.LogInformation("Verifying database connection...");
-
-        // Try a simple query
-        var canConnect = await dbContext.Database.CanConnectAsync();
-
-        if (canConnect)
+        if (await dbContext.Database.CanConnectAsync())
         {
             logger.LogInformation("Database connection successful");
-
-            // Verify we can perform a simple read operation
-            var testEmployee = await dbContext.Employees
-    .AsNoTracking() // Avoid tracking issues
-    .Select(e => new { e.EmployeeID, e.FirstName }) // Only request columns that exist
-    .FirstOrDefaultAsync();
-
-            if (testEmployee != null)
-            {
-                logger.LogInformation($"Test query successful. Found employee {testEmployee.EmployeeID}");
-            }
-
-            // Verify we can perform a simple write operation (in a transaction that we'll roll back)
-            await using var transaction = await dbContext.Database.BeginTransactionAsync();
-            try
-            {
-                var testUpdate = await dbContext.Database.ExecuteSqlRawAsync(
-                    "UPDATE Employees SET FirstName = FirstName WHERE EmployeeID = 1");
-                logger.LogInformation("Test update operation successful");
-                await transaction.RollbackAsync();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Test update operation failed");
-                await transaction.RollbackAsync();
-                throw;
-            }
         }
         else
         {
             logger.LogError("Database connection failed");
         }
-    }
-    catch (SqlException sqlEx)
-    {
-        logger.LogCritical(sqlEx, "SQL Server connection error. Check your connection string and network.");
-        throw;
     }
     catch (Exception ex)
     {
