@@ -1,451 +1,68 @@
 ﻿@page
-@model LoansModel
+@model HumanRepProj.Pages.LoansModel
 @{
-    ViewData["Title"] = "Loan Portfolio";
+    ViewData["Title"] = "Loan Management";
     Layout = "_Layout";
 }
 
-@section Styles {
-    <style>
-        :root {
-            --loan-primary: #4e73df;
-            --loan-secondary: #858796;
-            --loan-success: #1cc88a;
-            --loan-info: #36b9cc;
-            --loan-warning: #f6c23e;
-            --loan-danger: #e74a3b;
-            --loan-light: #f8f9fc;
-            --loan-dark: #5a5c69;
-        }
+<h2 class="mb-4">Manage Loans</h2>
 
-        .loan-container {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 20px;
-            min-height: calc(100vh - 70px);
-            padding: 20px;
-            background-color: #f8f9fc;
-        }
+<!-- Admin Navigation -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Admin/Dashboard">Admin Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Loan Management</li>
+    </ol>
+</nav>
 
-        .loan-sidebar {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-            padding: 20px;
-            height: fit-content;
-        }
+<!-- Add New Loan Form -->
 
-        .loan-main {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
 
-        .loan-card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
-            transition: all 0.3s;
-            border-left: 4px solid;
-        }
-
-            .loan-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.2);
-            }
-
-        .loan-card-primary {
-            border-left-color: var(--loan-primary);
-        }
-
-        .loan-card-success {
-            border-left-color: var(--loan-success);
-        }
-
-        .loan-card-warning {
-            border-left-color: var(--loan-warning);
-        }
-
-        .loan-card-danger {
-            border-left-color: var(--loan-danger);
-        }
-
-        .loan-stat {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .loan-stat-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--loan-secondary);
-        }
-
-        .loan-table {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
-            overflow: hidden;
-        }
-
-            .loan-table th {
-                background-color: #f8f9fc;
-                border-bottom-width: 1px;
-                text-transform: uppercase;
-                font-size: 0.7rem;
-                letter-spacing: 0.5px;
-                color: var(--loan-secondary);
-                padding: 1rem 1.25rem;
-            }
-
-            .loan-table td {
-                padding: 1rem 1.25rem;
-                vertical-align: middle;
-                border-top: 1px solid #e3e6f0;
-            }
-
-        .loan-status {
-            display: inline-block;
-            padding: 0.35em 0.65em;
-            font-size: 0.75em;
-            font-weight: 700;
-            line-height: 1;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: baseline;
-            border-radius: 0.25rem;
-        }
-
-        .status-active {
-            color: #fff;
-            background-color: var(--loan-primary);
-        }
-
-        .status-pending {
-            color: #fff;
-            background-color: var(--loan-warning);
-        }
-
-        .status-approved {
-            color: #fff;
-            background-color: var(--loan-success);
-        }
-
-        .status-rejected {
-            color: #fff;
-            background-color: var(--loan-danger);
-        }
-
-        .loan-search {
-            position: relative;
-            max-width: 300px;
-        }
-
-            .loan-search input {
-                padding-left: 2.5rem;
-                border-radius: 20px;
-                border: 1px solid #d1d3e2;
-            }
-
-            .loan-search .search-icon {
-                position: absolute;
-                left: 1rem;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #b7b9cc;
-            }
-
-        .loan-action-btn {
-            width: 30px;
-            height: 30px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            border: 1px solid #d1d3e2;
-            background: white;
-            color: var(--loan-secondary);
-            transition: all 0.3s;
-        }
-
-            .loan-action-btn:hover {
-                background: #f8f9fc;
-                color: var(--loan-primary);
-            }
-
-        .loan-pill {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            border-radius: 10rem;
-            background-color: #f8f9fc;
-            color: var(--loan-secondary);
-        }
-
-        .loan-pill-primary {
-            background-color: rgba(78, 115, 223, 0.1);
-            color: var(--loan-primary);
-        }
-
-        .loan-pill-success {
-            background-color: rgba(28, 200, 138, 0.1);
-            color: var(--loan-success);
-        }
-
-        .loan-pill-warning {
-            background-color: rgba(246, 194, 62, 0.1);
-            color: var(--loan-warning);
-        }
-
-        .loan-pill-danger {
-            background-color: rgba(231, 74, 59, 0.1);
-            color: var(--loan-danger);
-        }
-
-        .loan-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 10px;
-        }
-
-        @@media (max-width: 992px) {
-            .loan-container {
-                grid-template-columns: 1fr;
-            }
-
-            .loan-sidebar {
-                display: none;
-            }
-        }
-    </style>
-}
-
-<div class="loan-container">
-    <!-- Sidebar -->
-    <div class="loan-sidebar">
-        <h5 class="mb-4">Loan Filters</h5>
-
-        <div class="mb-4">
-            <label class="form-label loan-stat-label mb-2">Loan Type</label>
-            <select class="form-select form-select-sm">
-                <option selected>All Types</option>
-                <option>Personal Loan</option>
-                <option>Mortgage</option>
-                <option>Auto Loan</option>
-                <option>Business Loan</option>
-                <option>Student Loan</option>
-            </select>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label loan-stat-label mb-2">Status</label>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="allStatus" checked>
-                <label class="form-check-label" for="allStatus">All Statuses</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="activeStatus">
-                <label class="form-check-label" for="activeStatus">Active</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="pendingStatus">
-                <label class="form-check-label" for="pendingStatus">Pending</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="approvedStatus">
-                <label class="form-check-label" for="approvedStatus">Approved</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="rejectedStatus">
-                <label class="form-check-label" for="rejectedStatus">Rejected</label>
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label loan-stat-label mb-2">Amount Range</label>
-            <div class="d-flex align-items-center mb-2">
-                <input type="number" class="form-control form-control-sm me-2" placeholder="Min" style="width: 80px;">
-                <span class="me-2">-</span>
-                <input type="number" class="form-control form-control-sm" placeholder="Max" style="width: 80px;">
-            </div>
-        </div>
-
-        <button class="btn btn-sm btn-primary w-100">Apply Filters</button>
+<!-- Loans Table -->
+<div class="card">
+    <div class="card-header bg-secondary text-white">
+        Existing Loans
     </div>
-
-    <!-- Main Content -->
-    <div class="loan-main">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Loan Portfolio</h4>
-            <div class="d-flex gap-2">
-                <div class="loan-search">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" class="form-control form-control-sm" placeholder="Search loans...">
-                </div>
-                <button class="btn btn-sm btn-primary">
-                    <i class="bi bi-plus-lg me-1"></i> New Loan
-                </button>
-            </div>
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="row g-3">
-            <div class="col-md-6 col-lg-3">
-                <div class="loan-card loan-card-primary p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="loan-stat">@Model.TotalLoans.ToString("N0")</div>
-                            <div class="loan-stat-label">Total Loans</div>
-                        </div>
-                        <i class="bi bi-cash-stack fs-3 opacity-10"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="loan-card loan-card-success p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="loan-stat">@Model.ActiveLoans.ToString("N0")</div>
-                            <div class="loan-stat-label">Active Loans</div>
-                        </div>
-                        <i class="bi bi-check-circle fs-3 opacity-10"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="loan-card loan-card-warning p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="loan-stat">@Model.PendingLoans.ToString("N0")</div>
-                            <div class="loan-stat-label">Pending Approval</div>
-                        </div>
-                        <i class="bi bi-hourglass-split fs-3 opacity-10"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="loan-card loan-card-danger p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="loan-stat">@Model.DefaultRate.ToString("P1")</div>
-                            <div class="loan-stat-label">Default Rate</div>
-                        </div>
-                        <i class="bi bi-exclamation-triangle fs-3 opacity-10"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loans Table -->
-        <div class="loan-table">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Loan #</th>
-                            <th>Borrower</th>
-                            <th>Amount</th>
-                            <th>Type</th>
-                            <th>Issued Date</th>
-                            <th>Due Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var loan in Model.Loans)
-                        {
-                            <tr>
-                                <td>#@loan.Id</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="@loan.BorrowerAvatar" alt="Borrower" class="loan-avatar">
-                                        <div>
-                                            <div class="fw-bold">@loan.BorrowerName</div>
-                                            <div class="text-muted small">@loan.BorrowerId</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="fw-bold">@loan.Amount.ToString("C")</td>
-                                <td>
-                                    <span class="loan-pill @loan.TypePillClass">@loan.Type</span>
-                                </td>
-                                <td>@loan.IssuedDate.ToString("MMM d, yyyy")</td>
-                                <td>@loan.DueDate.ToString("MMM d, yyyy")</td>
-                                <td>
-                                    <span class="loan-status @loan.StatusClass">@loan.Status</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="loan-action-btn" title="View">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="loan-action-btn" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="loan-action-btn" title="Documents">
-                                            <i class="bi bi-file-earmark-text"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Table Footer -->
-            <div class="d-flex justify-content-between align-items-center p-3 border-top">
-                <div class="text-muted small">
-                    Showing 1 to @Model.Loans.Count of @Model.TotalLoans entries
-                </div>
-                <nav>
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
+    <div class="card-body">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Loan ID</th>
+                    <th>Employee ID</th>
+                    <th>Loan Type</th>
+                    <th>Amount</th>
+                    <th>Paid</th>
+                    <th>Status</th>
+                    <th>Issued</th>
+                    <th>Due</th>
+                    <th>Term</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loan in Model.LoansList)
+                {
+                    <tr>
+                        <td>@loan.LoanID</td>
+                        <td>@loan.EmployeeID</td>
+                        <td>@loan.LoanType</td>
+                        <td>@loan.LoanAmount.ToString("C")</td>
+                        <td>@loan.PaidLoan.ToString("C")</td>
+                        <td>@loan.LoanStatus</td>
+                        <td>@loan.DateIssued.ToShortDateString()</td>
+                        <td>@loan.DueDate.ToShortDateString()</td>
+                        <td>@loan.LoanTerm months</td>
+                        <td>
+                            <a asp-page="./EditLoan" asp-route-id="@loan.LoanID" class="btn btn-sm btn-primary">Edit</a>
+                            <a asp-page="./DeleteLoan" asp-route-id="@loan.LoanID" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        // Initialize tooltips
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
-        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-
-        // Loan status filter checkboxes
-        document.getElementById('allStatus').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.form-check-input:not(#allStatus)');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
-        });
-
-        // Responsive table actions for mobile
-        function setupResponsiveActions() {
-            if (window.innerWidth < 768) {
-                // For mobile, we might want to collapse some actions
-                console.log('Mobile view detected');
-            }
-        }
-
-        window.addEventListener('resize', setupResponsiveActions);
-        document.addEventListener('DOMContentLoaded', setupResponsiveActions);
-    </script>
+    <partial name="_ValidationScriptsPartial" />
 }

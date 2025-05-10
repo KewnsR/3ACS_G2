@@ -1,4 +1,5 @@
 ﻿using HumanRepProj.Controllers;
+using HumanRepProj.Data;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
@@ -101,5 +102,9 @@ namespace HumanRepProj.Models
         [ForeignKey("FaceDataID")]
         [ValidateNever]
         public virtual FaceData? FaceData { get; set; }
+
+        [ValidateNever]
+        public virtual ICollection<Loans> Loans { get; set; } = new List<Loans>();
+
     }
 }
