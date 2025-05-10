@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HumanRepProj.Pages
 {
-    public class UserModel : PageModel
+    public class ForgotPasswordModel : PageModel
     {
         public void OnGet()
         {

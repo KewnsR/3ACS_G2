@@ -425,7 +425,7 @@
             </div>
 
             <div class="sidebar-user">
-                <div class="user-name">John Doe</div>
+                <div class="user-name">Lebron James</div>
                 <div class="user-role">Employee</div>
             </div>
 
@@ -457,16 +457,6 @@
                         </a>
                     </li>
                 </ul>
-
-                <p class="nav-title">Others</p>
-                <ul>
-                    <li>
-                        <a href="/UserHelp">
-                            <i class="fas fa-question-circle"></i>
-                            <span>Help</span>
-                        </a>
-                    </li>
-                </ul>
             </nav>
 
             <div class="sidebar-footer">
@@ -479,6 +469,12 @@
 
         <!-- Main Content -->
         <main class="main-content">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success" style="padding: 1rem; margin-bottom: 1.5rem; background-color: #d1fae5; color: #065f46; border-radius: var(--border-radius);">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
             <!-- Profile Content -->
             <div class="content-container">
                 <div class="profile-header">
@@ -541,13 +537,13 @@
                         <form>
                             <div class="form-group">
                                 <label class="form-label">Full Name</label>
-                                <input type="text" class="form-control" value="John Doe">
+                                <input type="text" class="form-control" value="Lebron James">
                             </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                                 <div class="form-group">
                                     <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" value="john.doe@company.com">
+                                    <input type="email" class="form-control" value="lebron.james@company.com">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Phone</label>
